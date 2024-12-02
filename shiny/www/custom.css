@@ -1,0 +1,40 @@
+/* Dunkel-Option in der Navbar nach links verschieben */
+.ml-2, .mx-2 {
+    margin-left: 0.5rem !important;
+    position: absolute;
+    right: 160px;
+    top: 20%;
+}
+
+/* Sidebar Titel anzeigen, auch wenn eingeklappt */
+.sidebar-mini.sidebar-collapse .brand-text {
+  all: unset;
+}
+
+/* Sidebar Titel zentrieren */
+[class*='sidebar-light'] .brand-link {
+  text-align: center;
+}
+
+/* Sidebar items */
+.nav-sidebar .nav-item > .nav-link {
+  padding: 1.2rem 1rem;
+  font-size: 1.1rem;
+}
+.nav-sidebar .nav-treeview > .nav-item > .nav-link {
+  padding: 0.9rem 1rem 0.9rem 2.5rem;
+  font-size: 1rem;
+}
+.nav-sidebar .nav-icon {
+  font-size: 1.3rem;
+}
+
+/* Icon bzW. Pin-Symbol der Controlbar verstecken */
+#controlbarPin { display: none !important; }
+
+/* Box 'selectLocation' in der Controlbar heruntersetzen */
+#boxLocation { margin-top: 10px !important;; }
+
+
+
+
