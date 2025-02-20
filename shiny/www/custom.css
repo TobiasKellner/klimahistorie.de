@@ -77,3 +77,22 @@ img {border-radius: 20px;}
         background-color: #5499c7;
         padding: 20px;
       }
+
+
+#mymap {
+
+  height: 300px !important;
+  visibility: inherit;
+  position: relative;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  border-left-width: 2px;
+  border-left-style: solid;
+  border-right-width: 2px;
+  border-right-style: solid;
+  border-top-width: 2px;
+  border-top-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-style: solid;
+  border-radius: 10px;
+}
