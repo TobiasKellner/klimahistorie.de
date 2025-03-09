@@ -73,7 +73,8 @@ dashboardPage(
       selectizeInput(
         "selectLocation",
         "Standort auswählen:",
-        choices = c("Berlin", "Hamburg")
+        Stationsliste,
+        selected = Stationsliste[1]
       ),
       leafletOutput("mymap")
     )
