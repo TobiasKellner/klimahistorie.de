@@ -6,22 +6,17 @@ Tab1_UI_function <- function() {
       column(
         2,
         style = "background-color: #e0e9f3;",
-        selectInput('Station', HTML(paste(
-          "<b>", "Stationsname", "</b>"
-        )), Liste, selected = "Erfurt-Weimar")
-        ,
         selectInput(
-          'ycol',
+          'Variable1',
           HTML(paste("<b>", "Variable", "</b>")),
           c(
-            "Temperatur",
+            "Lufttemperatur",
             "Schneehoehe",
             "Sonnenscheindauer",
             "Niederschlagshoehe"
-          ),
-          selected = names(dataset)[[1]]
+          )
         ),
-        selectInput('month', HTML(paste(
+        selectInput('month1', HTML(paste(
           "<b>", "Jahr / Monat", "</b>"
         )), c(month_list), selected = "Gesamtes Jahr"),
         radioButtons(
@@ -51,7 +46,8 @@ Tab1_UI_function <- function() {
       column(
         10,
         uiOutput("header_text"),
-        plotlyOutput("plot1", height = "auto")
+        uiOutput("description1"),
+        withSpinner(plotlyOutput("plot1", height = "calc(100vh - 250px)"))
       )
     )
   )
