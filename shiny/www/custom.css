@@ -3,7 +3,7 @@
     margin-left: 0.5rem !important;
     position: absolute;
     right: 160px;
-    top: 20%;
+    margin-top: 0px;
 }
 
 /* Sidebar Titel anzeigen, auch wenn eingeklappt */
@@ -74,13 +74,11 @@ img {border-radius: 20px;}
         justify-content: center;
         align-items: center;
         border-radius: 20px;
-        background-color: #5499c7;
+        background-color: #007bff1a;
         padding: 20px;
       }
 
-
 #mymap {
-
   height: 300px !important;
   visibility: inherit;
   position: relative;
@@ -95,4 +93,9 @@ img {border-radius: 20px;}
   border-bottom-width: 2px;
   border-bottom-style: solid;
   border-radius: 10px;
+}
+
+/* Info-Box */
+.info-box {
+  margin-bottom: 0px;
 }
