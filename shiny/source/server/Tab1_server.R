@@ -38,7 +38,18 @@ output$plot1 <- renderPlotly({
           input$Variable1 == "Niederschlagshoehe" ~ "blue"
         )
         )+
-      xlab("Jahr") +
+      xlab("Jahr")+
+      ylab(
+        paste0(
+          input$Variable1,
+          case_when(
+            input$Variable1 == "Lufttemperatur" ~ " in °C",
+            input$Variable1 == "Schneehoehe" ~ " in cm",
+            input$Variable1 == "Sonnenscheindauer" ~ " in Stunden/Tag",
+            input$Variable1 == "Niederschlagshoehe" ~ "in mm/m²"
+          )
+          )
+        )+
       theme(
         legend.position = "none",
         plot.background = element_rect(fill = 'transparent', color = NA)
@@ -56,15 +67,19 @@ output$plot1 <- renderPlotly({
 # render description
 output$description1 <- renderUI({
   HTML(
-    str_glue(
-      paste0(icon("info-circle")),
-      "
-      &nbspDiese Grafik zeigt die durchschnittliche
-      <strong>{input$Variable1}</strong>
-      für den Standort
-      <strong>{input$selectLocation}</strong>
-      für ...
-      "
+    paste0(
+      "Diese Grafik zeigt die durchschnittliche ",
+      "<strong>", input$Variable1, "</strong> ",
+      "am Standort ",
+      "<strong>", input$selectLocation, "</strong> ",
+      "für ",
+      "<strong>",
+      ifelse(
+        input$month1 == 0,
+        'das gesamte Jahr.',
+        paste0("den Monat ", month_list %>% keep(~ .x == input$month1) %>% names(), ".")
+        ),
+      "</strong> "
+      )
     )
-  )
 })

@@ -5,7 +5,11 @@ Tab1_UI_function <- function() {
     fluidRow(
       column(
         2,
-        style = "background-color: #e0e9f3;",
+        style = "
+        background-color: #007bff1a;
+        padding: 10px;
+        border-radius: 5px;
+        ",
         selectInput(
           'Variable1',
           HTML(paste("<b>", "Variable", "</b>")),
@@ -45,8 +49,12 @@ Tab1_UI_function <- function() {
       ),
       column(
         10,
-        uiOutput("header_text"),
-        uiOutput("description1"),
+        bs4InfoBox(
+          title = uiOutput("description1"),
+          icon = icon("info-circle"),
+          color = "primary",
+          width = 12
+        ),
         withSpinner(plotlyOutput("plot1", height = "calc(100vh - 250px)"))
       )
     )

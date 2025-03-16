@@ -16,6 +16,8 @@ library(dbx)
 
 source("~/klimahistorie.de/shiny/authentication/db_connection.R")
 
+#rdwd::updateRdwd()
+
 options(rdwdlocdir = paste0(getwd(), "/DWDdata"))
 
 # source database connection function
@@ -83,7 +85,16 @@ Liste <-
 
 # Import ------------------------------------------------------------------
 
-dataset <- map_df(Liste, ~{
+con <- db_connection()
+
+Stationstabelle <- con %>%
+  tbl("Stationstabelle") %>%
+  collect()
+
+#dbDisconnect(con)
+
+
+map(Stationstabelle$Stationsname[4:20], ~{
 
   # download historical climate data
   df_historical <- readDWD(dataDWD(
@@ -111,43 +122,61 @@ dataset <- map_df(Liste, ~{
     ), varnames = TRUE)
 
   # bind historical and recent data frames
-  bind_rows(df_historical, df_recent) %>%
+  dataset <- bind_rows(df_historical, df_recent) %>%
     mutate(
       Name_Station = .x,
       Jahr = MESS_DATUM %>% year(),
       Monat = MESS_DATUM %>% month(label = T, abbr = F)
+    ) %>%
+    distinct(STATIONS_ID, MESS_DATUM,.keep_all = T)
+
+  # rename columns
+  dataset <- dataset %>%
+    transmute(
+      STATIONS_ID,
+      DATUM = MESS_DATUM %>% as.Date(),
+      QN_3 = 0, # NA noch entfernen
+      Windspitze = FX.Windspitze %>% as.numeric(),
+      Windgeschwindigkeit = FM.Windgeschwindigkeit %>% as.numeric(),
+      QN_4 = QN_4 %>% as.numeric(),
+      Niederschlagshoehe = RSK.Niederschlagshoehe %>% as.numeric(),
+      Niederschlagsform = RSKF.Niederschlagsform %>% as.numeric(),
+      Sonnenscheindauer = SDK.Sonnenscheindauer %>% as.numeric(),
+      Schneehoehe = SHK_TAG.Schneehoehe %>% as.numeric(),
+      Bedeckungsgrad = NM.Bedeckungsgrad %>% as.numeric(),
+      Dampfdruck = VPM.Dampfdruck %>% as.numeric(),
+      Luftdruck = PM.Luftdruck %>% as.numeric(),
+      Lufttemperatur = TMK.Lufttemperatur %>% as.numeric(),
+      Relative_Feuchte = UPM.Relative_Feuchte %>% as.numeric(),
+      Lufttemperatur_Max = TXK.Lufttemperatur_Max %>% as.numeric(),
+      Lufttemperatur_Min = TNK.Lufttemperatur_Min %>% as.numeric(),
+      Lufttemperatur_5cm_min = TGK.Lufttemperatur_5cm_min %>% as.numeric(),
+      eor,
+      Name_Station
     )
 
-}) %>%
-  distinct(STATIONS_ID, MESS_DATUM,.keep_all = T)
+  dbxUpsert(
+    conn = con,
+    table = "Tagesdaten",
+    records = dataset,
+    where_cols = c("STATIONS_ID", "DATUM"),
+    batch_size = 1000,
+    skip_existing = FALSE
+  )
+
+  # delete all downloaded zip-files after inserting all information into database
+  do.call(file.remove, list(list.files(paste0(getwd(),"/DWDdata"), full.names = TRUE)))
+
+  Sys.sleep(1)
+
+  gc()
+
+})
 
 
 # Transformation ----------------------------------------------------------
 
-# rename columns
-dataset <- dataset %>%
-  transmute(
-    STATIONS_ID,
-    DATUM = MESS_DATUM %>% as.Date(),
-    QN_3,
-    Windspitze = FX.Windspitze,
-    Windgeschwindigkeit = FM.Windgeschwindigkeit,
-    QN_4,
-    Niederschlagshoehe = RSK.Niederschlagshoehe,
-    Niederschlagsform = RSKF.Niederschlagsform,
-    Sonnenscheindauer = SDK.Sonnenscheindauer,
-    Schneehoehe = SHK_TAG.Schneehoehe,
-    Bedeckungsgrad = NM.Bedeckungsgrad,
-    Dampfdruck = VPM.Dampfdruck,
-    Luftdruck = PM.Luftdruck,
-    Lufttemperatur = TMK.Lufttemperatur,
-    Relative_Feuchte = UPM.Relative_Feuchte,
-    Lufttemperatur_Max = TXK.Lufttemperatur_Max,
-    Lufttemperatur_Min = TNK.Lufttemperatur_Min,
-    Lufttemperatur_5cm_min = TGK.Lufttemperatur_5cm_min,
-    eor,
-    Name_Station
-  )
+
 
 
 # Export ------------------------------------------------------------------
@@ -169,5 +198,6 @@ dbxUpsert(
 
 dbDisconnect(con)
 
-# delete all downloaded zip-files after inserting all information into database
-do.call(file.remove, list(list.files(paste0(getwd(),"/DWDdata"), full.names = TRUE)))
+
+
+

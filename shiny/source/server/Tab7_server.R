@@ -1,16 +1,22 @@
 
+df_stationstabelle <- reactive({
+  con %>%
+    tbl("Stationstabelle") %>%
+    collect()
+})
+
+
 output$map_overview <- renderLeaflet({
-  Index_Wetterstationen%>%
+  df_stationstabelle() %>%
     tibble()%>%
-    filter(res=="daily")%>%
     distinct(Stationsname, .keep_all = TRUE)%>%
-    filter(Stationsname %in% Liste)%>%
     leaflet() %>%
     addTiles() %>%
     addMarkers(
-      ~ geoLaenge,
-      ~ geoBreite,
+      lng = ~ geoLaenge,
+      lat = ~ geoBreite,
       popup = ~ as.character(Stationsname),
+      layerId = ~ Stationsname,
       label = ~ lapply(
         str_c(
           "<p>",
@@ -26,10 +32,16 @@ output$map_overview <- renderLeaflet({
           " m",
           " <p> ",
           "Stations_id: ",
-          Stations_id,
+          STATIONS_ID,
           "</p>"
         ),
         HTML
       )
     )
 })
+
+observe({
+  updateSelectInput(inputId = "selectLocation", selected = input$map_overview_marker_click$id)
+})
+
+
