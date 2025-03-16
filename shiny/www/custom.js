@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
     document.querySelector('.brand-text').innerHTML =
       (mutations[0].target.classList.contains('sidebar-collapse')) ?
       '<span style="font-size: 9px;"><strong>Klimahistorie.de</strong></span>' :
-      '<strong>Klimahistorie.de</strong>';
+      '<span style="font-weight: 900;">Klimahistorie.de</span>'
   })
   .observe(element, {
     attributes: true
