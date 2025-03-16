@@ -4,6 +4,9 @@ function(input, output, session) {
 
   # source server scripts
   source("source/server/Tab1_server.R", local = TRUE, encoding = "UTF-8")
+  source("source/server/Tab2_server.R", local = TRUE, encoding = "UTF-8")
+  source("source/server/Tab3_server.R", local = TRUE, encoding = "UTF-8")
+  source("source/server/Tab4_server.R", local = TRUE, encoding = "UTF-8")
   source("source/server/Tab7_server.R", local = TRUE, encoding = "UTF-8")
 
   # Kontrollleiste ein/ausblenden
@@ -158,11 +161,35 @@ function(input, output, session) {
 
 
   output$mymap <- renderLeaflet({
-    leaflet() %>%
-      addTiles() %>%
-      setView(-93.65, 42.0285, zoom = 17) %>%
-      addPopups(-93.65, 42.0285, 'Here is the <b>Department of Statistics</b>, ISU') %>%
-      addMarkers(-93.65, 42.0285)
+    con %>%
+      tbl("Stationstabelle") %>%
+      filter(Stationsname == input$selectLocation) %>%
+      collect() %>%
+      leaflet() %>%
+      addTiles()%>%
+      addMarkers(
+        ~geoLaenge,
+        ~geoBreite,
+        popup = ~Stationsname,
+        label = ~str_c(
+          "<p>",
+          "<b>",
+          Stationsname,
+          "</b>",
+          " <p> ",
+          "Bundesland: ",
+          Bundesland,
+          " <p> ",
+          "Stationshoehe: ",
+          Stationshoehe,
+          " m",
+          " <p> ",
+          "Stations_id: ",
+          STATIONS_ID,
+          "</p>"
+        ) %>%
+          HTML()
+      )
   })
 
 }
