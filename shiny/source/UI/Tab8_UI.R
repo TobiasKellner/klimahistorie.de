@@ -69,6 +69,8 @@ Tab8_UI_function <- function() {
             paste0(
               "<p style=\"text-align: justify;\">",
               "Entwickelt wurde diese Anwendung mithilfe der Programmiersprache R und dem Erweiterungspaket Shiny. ",
+              "Bereitgestellt wird diese Web-App mithilfe der Containerisierungssoftware Docker. ",
+              "Der Quellcode dieser Anwendung ist quelloffen und unter GitHub frei verfügbar.",
               "</p>"
             )
           )
