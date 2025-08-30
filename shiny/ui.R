@@ -5,6 +5,8 @@ source("source/UI/Tab1_UI.R")
 source("source/UI/Tab2_UI.R")
 source("source/UI/Tab3_UI.R")
 source("source/UI/Tab4_UI.R")
+source("source/UI/Tab5_UI.R")
+source("source/UI/Tab6_UI.R")
 source("source/UI/Tab7_UI.R")
 source("source/UI/Tab8_UI.R")
 
@@ -55,8 +57,8 @@ dashboardPage(
       ),
       menuItem("Jahresverläufe im Vergleich", tabName = "tab3", icon = icon("chart-line")),
       menuItem("Tageshistorie", tabName = "tab4", icon = icon("calendar-alt")),
-      menuItem("Klimarekorde", tabName = "records", icon = icon("trophy")),
-      menuItem("Tage über & unter", tabName = "over", icon = icon("thermometer-half")),
+      menuItem("Klimarekorde", tabName = "tab5", icon = icon("trophy")),
+      menuItem("Tage über & unter", tabName = "tab6", icon = icon("thermometer-half")),
       menuItem("Übersicht Wetterstationen", tabName = "overview", icon = icon("map-marker-alt")),
       menuItem("Über die Web-App", tabName = "about", icon = icon("info")),
 
@@ -81,6 +83,7 @@ dashboardPage(
     box(
       id = "boxLocation",
       style = "padding-left: 5px; padding-right: 5px;",
+      collapsible = FALSE,
       title = "Standort",
       width = 12,
       icon = icon("location-dot"),
@@ -115,6 +118,12 @@ dashboardPage(
 
       # Tab4 - Tageshistorie
       Tab4_UI_function(),
+
+      # Tab5
+      Tab5_UI_function(),
+
+      # Tab6
+      Tab6_UI_function(),
 
       # Tab 7 - Karte
       Tab7_UI_function(),

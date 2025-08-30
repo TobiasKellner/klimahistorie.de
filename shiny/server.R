@@ -7,6 +7,8 @@ function(input, output, session) {
   source("source/server/Tab2_server.R", local = TRUE, encoding = "UTF-8")
   source("source/server/Tab3_server.R", local = TRUE, encoding = "UTF-8")
   source("source/server/Tab4_server.R", local = TRUE, encoding = "UTF-8")
+  source("source/server/Tab5_server.R", local = TRUE, encoding = "UTF-8")
+  source("source/server/Tab6_server.R", local = TRUE, encoding = "UTF-8")
   source("source/server/Tab7_server.R", local = TRUE, encoding = "UTF-8")
 
   # Kontrollleiste ein/ausblenden
@@ -131,6 +133,7 @@ function(input, output, session) {
         actionButton(
           "close1",
           "Schließen",
+          icon = icon("xmark"),
           style = "color: white ; background-color: #ec7063; border-radius: 10px; border: none;"
         )
       )
@@ -152,7 +155,7 @@ function(input, output, session) {
         session,
         "button1",
         label = HTML("Benötigen Sie Hilfe zu<br/>statistischen Auswertungen,<br/>Datenanalysen &<br/>Visualisierungen?"),
-        icon = icon(""))
+        icon = tags$i(class = ""))
     }
   })
 
