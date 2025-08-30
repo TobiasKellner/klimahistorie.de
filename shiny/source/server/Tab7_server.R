@@ -1,21 +1,30 @@
 
 df_stationstabelle <- reactive({
   con %>%
-    tbl("Stationstabelle") %>%
+    tbl("Stationstabelle")%>%
+    distinct(Stationsname, .keep_all = TRUE) %>%
     collect()
 })
 
 
+icon <- reactive({
+  awesomeIcons(
+  icon = 'circle',
+  iconColor = '#FFFFFF',
+  library = 'fa',
+  spin = TRUE,
+  markerColor = ifelse(df_stationstabelle()$Stationsname == input$selectLocation, 'red', 'blue'))
+})
+
 output$map_overview <- renderLeaflet({
   df_stationstabelle() %>%
-    tibble()%>%
-    distinct(Stationsname, .keep_all = TRUE)%>%
     leaflet() %>%
     addTiles() %>%
-    addMarkers(
+    addAwesomeMarkers(
       lng = ~ geoLaenge,
       lat = ~ geoBreite,
       popup = ~ as.character(Stationsname),
+      icon = icon(),
       layerId = ~ Stationsname,
       label = ~ lapply(
         str_c(
