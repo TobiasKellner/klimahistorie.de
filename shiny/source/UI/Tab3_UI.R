@@ -35,11 +35,13 @@ Tab3_UI_function <- function() {
           ),
           selected = "Linie"
         ),
-        radioButtons("smooth_trend",
-                     HTML(paste("<b>Trendlinie über alle ausgewählten Jahre:</b>", "(smooth)", sep="<br/>")),
-                     c("Ja" = TRUE,
-                       "Nein" = FALSE),
-                     selected = FALSE),
+        radioButtons(
+          "smooth_trend",
+          HTML("Durchschnittsverlauf anzeigen?"),
+          c("Ja" = TRUE, "Nein" = FALSE),
+          selected = FALSE,
+          inline = TRUE
+          ),
         textInput("year3", label = HTML(paste("<b>","Jahre","</b>")), value = "2022,2021"),
         "In diesem Feld können mehrere Jahre miteinander verglichen werden. Einfache so viele Jahre wie gewünscht eingeben. Die Jahre müssen durch ein Komma getrennt sein und dürfen kein Leerzeichen enthalten.\ Beispiel:\ 2020,2019,1999,1980"
       ),
