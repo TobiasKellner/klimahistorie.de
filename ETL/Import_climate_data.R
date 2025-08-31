@@ -16,85 +16,22 @@ library(dbx)
 
 source("~/klimahistorie.de/shiny/authentication/db_connection.R")
 
-#rdwd::updateRdwd()
+# rdwd::updateRdwd()
 
 options(rdwdlocdir = paste0(getwd(), "/DWDdata"))
-
-# source database connection function
-
-Liste <-
-  c(
-    "Berlin-Tempelhof",
-    "Erfurt-Weimar",
-    "Jena (Sternwarte)",
-    "Frankfurt/Main",
-    "Stuttgart-Echterdingen",
-    "Hannover",
-    "Hamburg-Neuwiedenthal",
-    "Koeln-Bonn",
-    "Potsdam",
-    "Duesseldorf",
-    "Dresden-Hosterwitz",
-    "Muenchen-Flughafen",
-    "Eschwege",
-    "Norderney",
-    "List auf Sylt",
-    "Schmuecke",
-    "Brocken",
-    "Fichtelberg",
-    "Feldberg/Schwarzwald",
-    "Zugspitze",
-    "Saarbruecken-Ensheim",
-    "Leipzig/Halle",
-    # "Mainz-Lerchenberg (ZDF)",
-    "Bremen",
-    "Kiel-Holtenau",
-    "Rostock-Warnemuende",
-    "Magdeburg",
-    "Schwerin",
-    "Grosser Arber",
-    "Nuernberg",
-    "Friedrichshafen",
-    "Cottbus",
-    "Kleiner Feldberg/Taunus",
-    "Muenster/Osnabrueck",
-    "Waren (Mueritz)",
-    "Eisenach",
-    "Gera-Leumnitz",
-    "Goettingen",
-    "Wuerzburg",
-    "Aachen-Orsbach",
-    "Wittenberg",
-    "Muehlhausen/Thueringen-Goermar",
-    "Freiburg",
-    "Ingolstadt (Flugplatz)",
-    "Regensburg",
-    "Chemnitz",
-    "Trier-Petrisberg",
-    "Freiburg/Elbe",
-    "Lenzen/Elbe",
-    "Luebeck-Blankensee",
-    "Fehmarn",
-    "Bremerhaven",
-    "Braunschweig",
-    "Augsburg",
-    "Helgoland"
-  ) %>%
-  sort()
 
 
 # Import ------------------------------------------------------------------
 
 con <- db_connection()
 
+# load station table
 Stationstabelle <- con %>%
   tbl("Stationstabelle") %>%
   collect()
 
-#dbDisconnect(con)
 
-
-map(Stationstabelle$Stationsname[4:20], ~{
+map(Stationstabelle$Stationsname[101:200], ~{
 
   # download historical climate data
   df_historical <- readDWD(dataDWD(
@@ -172,32 +109,3 @@ map(Stationstabelle$Stationsname[4:20], ~{
   gc()
 
 })
-
-
-# Transformation ----------------------------------------------------------
-
-
-
-
-# Export ------------------------------------------------------------------
-
-con <- db_connection()
-
-# dbCreateTable(conn = con, name = "Tagesdaten", dataset)
-#
-# dbSendQuery(con, 'ALTER TABLE "Tagesdaten" ADD PRIMARY KEY ("STATIONS_ID", "DATUM") ')
-
-dbxUpsert(
-  conn = con,
-  table = "Tagesdaten",
-  records = dataset,
-  where_cols = c("STATIONS_ID", "DATUM"),
-  batch_size = 1000,
-  skip_existing = FALSE
-  )
-
-dbDisconnect(con)
-
-
-
-
