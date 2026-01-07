@@ -23,6 +23,7 @@ source("~/klimahistorie.de/shiny/authentication/db_connection.R")
 
 options(rdwdlocdir = paste0(getwd(), "/DWDdata"))
 
+<<<<<<< HEAD
 # source database connection function
 
 Liste <- c(
@@ -84,19 +85,25 @@ Liste <- c(
   ) %>%
   sort()
 
+=======
+>>>>>>> refs/remotes/origin/main
 
 # Import ------------------------------------------------------------------
 
 con <- db_connection()
 
+# load station table
 Stationstabelle <- con %>%
   tbl("Stationstabelle") %>%
   collect()
 
-#dbDisconnect(con)
 
+<<<<<<< HEAD
 
 map(Stationstabelle$Stationsname[1], ~{
+=======
+map(Stationstabelle$Stationsname[101:200], ~{
+>>>>>>> refs/remotes/origin/main
 
   # download historical climate data
   df_historical <- readDWD(dataDWD(
@@ -174,6 +181,7 @@ map(Stationstabelle$Stationsname[1], ~{
   gc()
 
 })
+<<<<<<< HEAD
 
 
 # Transformation ----------------------------------------------------------
@@ -203,3 +211,5 @@ dbDisconnect(con)
 
 
 
+=======
+>>>>>>> refs/remotes/origin/main

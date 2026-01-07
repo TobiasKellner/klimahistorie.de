@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  shiny-app:
+    image: klimahistorie.de
+    build: .
+    deploy:
+      replicas: 3  # Automatische Skalierung: 3 Instanzen starten
+      restart_policy:
+        condition: on-failure
+    ports:
+      - "3838:3838"  # Shiny-App auf Port 3838 verfügbar
+    #networks:
+    #  - shiny-net
+
+  proxy:
+    image: traefik:v2.9
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "3850:3838"  # Traefik als Reverse Proxy für Port 80
+      - "8080:8080"  # Traefik Dashboard
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+

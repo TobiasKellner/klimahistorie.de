@@ -1,8 +1,6 @@
 library(DBI)
 library(RPostgres)
 
-config <- config::get(file = "~/klimahistorie.de/shiny/authentication/config.yml")
-
 db_connection <- function() {
 
   dbConnect(
