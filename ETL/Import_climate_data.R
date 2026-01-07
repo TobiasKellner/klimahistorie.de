@@ -12,18 +12,20 @@ library(stringr)
 library(lubridate)
 library(rdwd)
 library(DBI)
+library(dbplyr)
 library(dbx)
+library(RPostgres)
 
+# Datenbankverbindung laden
 source("~/klimahistorie.de/shiny/authentication/db_connection.R")
 
-#rdwd::updateRdwd()
+# rdwd::updateRdwd()
 
 options(rdwdlocdir = paste0(getwd(), "/DWDdata"))
 
 # source database connection function
 
-Liste <-
-  c(
+Liste <- c(
     "Berlin-Tempelhof",
     "Erfurt-Weimar",
     "Jena (Sternwarte)",
@@ -94,7 +96,7 @@ Stationstabelle <- con %>%
 #dbDisconnect(con)
 
 
-map(Stationstabelle$Stationsname[4:20], ~{
+map(Stationstabelle$Stationsname[1], ~{
 
   # download historical climate data
   df_historical <- readDWD(dataDWD(
@@ -183,9 +185,9 @@ map(Stationstabelle$Stationsname[4:20], ~{
 
 con <- db_connection()
 
-# dbCreateTable(conn = con, name = "Tagesdaten", dataset)
-#
-# dbSendQuery(con, 'ALTER TABLE "Tagesdaten" ADD PRIMARY KEY ("STATIONS_ID", "DATUM") ')
+dbCreateTable(conn = con, name = "Tagesdaten", dataset)
+
+dbSendQuery(con, 'ALTER TABLE "Tagesdaten" ADD PRIMARY KEY ("STATIONS_ID", "DATUM") ')
 
 dbxUpsert(
   conn = con,

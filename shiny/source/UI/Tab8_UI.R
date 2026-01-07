@@ -50,10 +50,19 @@ Tab8_UI_function <- function() {
           title = HTML("&nbsp Pressemeldungen"),
           status = "primary",
           width = 12,
+          height = "50%",
           collapsible = FALSE,
           icon = icon("newspaper"),
-          HTML(
-            "Test"
+          tags$a(
+            href = "https://www.uni-erfurt.de/studium/rund-ums-studium/campusleben-blog/zahlenmann-mit-erfindergeist",
+            "https://www.uni-erfurt.de/studium/rund-ums-studium/campusleben-blog/zahlenmann-mit-erfindergeist",
+            target = "_blank"
+          ),
+          br(),
+          tags$a(
+            href = "https://www.leg-thueringen.de/fileadmin/user_upload/leg_portal/downloads/publikationen/leg_thueringen/ebook_digitalisierung_leicht_erklaert.pdf",
+            "https://www.leg-thueringen.de/fileadmin/user_upload/leg_portal/downloads/publikationen/leg_thueringen/ebook_digitalisierung_leicht_erklaert.pdf",
+            target = "_blank"
           )
         )
       ),
@@ -73,6 +82,11 @@ Tab8_UI_function <- function() {
               "Der Quellcode dieser Anwendung ist quelloffen und unter GitHub frei verfügbar.",
               "</p>"
             )
+          ),
+          tags$a(
+            href = "https://github.com/TobiasKellner/klimahistorie.de",
+            "https://github.com/TobiasKellner/klimahistorie.de",
+            target = "_blank"
           )
         )
       )

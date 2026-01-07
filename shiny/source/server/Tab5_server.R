@@ -20,7 +20,7 @@ output$description5 <- renderUI({
         ),
       " je gemessenen Wert der jeweiligen Wettervariable für den Standort ",
       "<strong>", input$selectLocation, "</strong>",
-      "."
+      " an."
     )
   )
 })

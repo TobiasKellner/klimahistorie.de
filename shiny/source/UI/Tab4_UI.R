@@ -4,29 +4,43 @@ Tab4_UI_function <- function() {
     "tab4",
     fluidRow(
       column(
-        2,
-        style = "
-        background-color: #007bff1a;
-        padding: 10px;
-        border-radius: 5px;
-        ",
-        dateInput("date_dayhistory", "Tag auswhälen", language = "de", weekstart = 1, format = "dd.mm.yyyy"),
-        selectInput("variable_dayhistory", HTML(paste("<b>","Variable auswählen:","</b>")),c(
-          "Lufttemperatur",
-          "Schneehoehe",
-          "Sonnenscheindauer",
-          "Niederschlagshoehe"
-        ), selected = "Durchschnittstemperatur"),
-        radioButtons("average1",
-                     "Durchschnitt anzeigen:",
-                     c("Ja" = TRUE, "Nein" = FALSE),
-                     selected = FALSE,
-                     inline = TRUE),
-        radioButtons("sort4",
-                     "Absteigend sortieren:",
-                     c("Ja" = TRUE, "Nein" = FALSE),
-                     selected = FALSE,
-                     inline = TRUE)
+        width = 2,
+        style = "padding: 0px;",
+
+        box(
+          collapsible = FALSE,
+          title = "Einstellungen",
+          width = 12,
+          icon = icon("gear"),
+          status = "primary",
+          solidHeader = TRUE,
+          dateInput("date_dayhistory", "Tag auswhälen", language = "de", weekstart = 1, format = "dd.mm.yyyy"),
+          selectInput(
+            "variable_dayhistory",
+            HTML(paste("<b>","Variable auswählen:","</b>")),
+            c(
+              "Lufttemperatur",
+              "Schneehoehe",
+              "Sonnenscheindauer",
+              "Niederschlagshoehe"
+              ),
+            selected = "Durchschnittstemperatur"
+            ),
+          radioButtons(
+            "average1",
+            "Durchschnitt anzeigen:",
+            c("Ja" = TRUE, "Nein" = FALSE),
+            selected = FALSE,
+            inline = TRUE
+            ),
+        radioButtons(
+          "sort4",
+          "Absteigend sortieren:",
+          c("Ja" = TRUE, "Nein" = FALSE),
+          selected = FALSE,
+          inline = TRUE
+          )
+        )
       ),
       column(
         10,

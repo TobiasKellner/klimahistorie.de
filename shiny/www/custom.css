@@ -74,8 +74,10 @@ img {border-radius: 20px;}
         justify-content: center;
         align-items: center;
         border-radius: 20px;
-        background-color: #007bff1a;
+        background-color: white;
         padding: 20px;
+        border: 3px solid #007bff;
+        color: #007bff;
       }
 
 #mymap {

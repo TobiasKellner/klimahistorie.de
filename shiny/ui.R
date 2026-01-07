@@ -50,16 +50,12 @@ dashboardPage(
     sidebarMenu(
 
       menuItem("Durchschnitte & Trends", tabName = "tab1", icon = icon("chart-simple")),
-      menuItem(
-        "Wie war das Wetter wann & wo?",
-        tabName = "tab2",
-        icon = icon("map-marked-alt")
-      ),
-      menuItem("Jahresverläufe im Vergleich", tabName = "tab3", icon = icon("chart-line")),
+      menuItem("Tageswerte", tabName = "tab2", icon = icon("map-marked-alt")),
+      menuItem("Jahresvergleich", tabName = "tab3", icon = icon("chart-line")),
       menuItem("Tageshistorie", tabName = "tab4", icon = icon("calendar-alt")),
       menuItem("Klimarekorde", tabName = "tab5", icon = icon("trophy")),
       menuItem("Tage über & unter", tabName = "tab6", icon = icon("thermometer-half")),
-      menuItem("Übersicht Wetterstationen", tabName = "overview", icon = icon("map-marker-alt")),
+      menuItem("Stationsübersicht", tabName = "overview", icon = icon("map-marker-alt")),
       menuItem("Über die Web-App", tabName = "about", icon = icon("info")),
 
       actionButton(
@@ -69,9 +65,9 @@ dashboardPage(
         border: none; position: fixed; margin-left: 5px; bottom: 10px;"
         )
 
-    )
+      )
 
-      ),
+    ),
 
   # controlbar
   controlbar = dashboardControlbar(

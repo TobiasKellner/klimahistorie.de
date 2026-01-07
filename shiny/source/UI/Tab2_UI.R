@@ -5,17 +5,22 @@ Tab2_UI_function <- function() {
     fluidRow(
       column(
         width = 2,
-        style = "
-        background-color: #007bff1a;
-        padding: 10px;
-        border-radius: 5px;
-        ",
-        dateInput(
-          "date2",
-          HTML(paste("<b>","Datum:","</b>")),
-          value = today() - months(1),
-          max = today(),
-          startview = "decade"
+        style = "padding: 0px;",
+
+        box(
+          collapsible = FALSE,
+          title = "Einstellungen",
+          width = 12,
+          icon = icon("gear"),
+          status = "primary",
+          solidHeader = TRUE,
+          dateInput(
+            "date2",
+            HTML(paste("<b>","Datum:","</b>")),
+            value = today() - months(1),
+            max = today(),
+            startview = "decade"
+            )
           )
         ),
       column(

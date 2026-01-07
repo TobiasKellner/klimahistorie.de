@@ -133,7 +133,7 @@ function(input, output, session) {
         actionButton(
           "close1",
           "Schließen",
-          icon = icon("xmark"),
+          #icon = icon("xmark"),
           style = "color: white ; background-color: #ec7063; border-radius: 10px; border: none;"
         )
       )

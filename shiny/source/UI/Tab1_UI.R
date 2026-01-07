@@ -3,49 +3,53 @@ Tab1_UI_function <- function() {
   tabItem(
     tabName = "tab1",
     fluidRow(
+      style = "display: flex; align-items: stretch;",
       column(
-        2,
-        style = "
-        background-color: #007bff1a;
-        padding: 10px;
-        border-radius: 5px;
-        ",
-        selectInput(
-          'Variable1',
-          HTML(paste("<b>", "Variable", "</b>")),
-          c(
-            "Lufttemperatur",
-            "Schneehoehe",
-            "Sonnenscheindauer",
-            "Niederschlagshoehe"
-          )
-        ),
-        selectInput('month1', HTML(paste(
-          "<b>", "Jahr / Monat", "</b>"
-        )), c(month_list), selected = "Gesamtes Jahr"),
-        radioButtons(
-          "current_year",
-          HTML(
-            paste(
-              "<b>Aktuelles Jahr anzeigen?</b>",
-              "(Bisheriger Durchschnittswert)",
-              sep = "<br/>"
+        width = 2,
+        style = "padding: 0px;",
+
+        box(
+          collapsible = FALSE,
+          title = "Einstellungen",
+          width = 12,
+          icon = icon("gear"),
+          status = "primary",
+          solidHeader = TRUE,
+          selectInput(
+            'Variable1',
+            HTML(paste("<b>", "Variable", "</b>")),
+            c(
+              "Lufttemperatur",
+              "Schneehoehe",
+              "Sonnenscheindauer",
+              "Niederschlagshoehe"
             )
           ),
-          c("Ja" = TRUE, "Nein" = FALSE),
-          selected = FALSE,
-          inline = T
-        )
-        ,
-        radioButtons(
-          "regline",
-          HTML(
-            paste("<b>Trendlinie:</b>", "(Regressionsgerade)", sep = "<br/>")
+          selectInput('month1', HTML(paste("<b>", "Jahr / Monat", "</b>")), c(month_list), selected = "Gesamtes Jahr"),
+          radioButtons(
+            "current_year",
+            HTML(
+              paste(
+                "<b>Aktuelles Jahr anzeigen?</b>",
+                "(Bisheriger Durchschnittswert)",
+                sep = "<br/>"
+              )
+            ),
+            c("Ja" = TRUE, "Nein" = FALSE),
+            selected = FALSE,
+            inline = T
           ),
-          c("Ja" = TRUE, "Nein" = FALSE),
-          selected = FALSE,
-          inline = T
+          radioButtons(
+            "regline",
+            HTML(
+              paste("<b>Trendlinie:</b>", "(Regressionsgerade)", sep = "<br/>")
+            ),
+            c("Ja" = TRUE, "Nein" = FALSE),
+            selected = FALSE,
+            inline = T
+          )
         )
+
       ),
       column(
         10,

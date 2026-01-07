@@ -5,19 +5,24 @@ Tab5_UI_function <- function() {
     fluidRow(
       column(
         width = 2,
-        style = "
-        background-color: #007bff1a;
-        padding: 10px;
-        border-radius: 5px;
-        ",
-        radioButtons(
-          inputId = "record",
-          HTML(paste("<b>","Maximum / Minimum","</b>")),
-                           c("Maximum" = "Maximum",
-                             "Minimum" = "Minimum"),
-                           selected = "Maximum")
-            ),
-            column(
+        style = "padding: 0px;",
+
+        box(
+          collapsible = FALSE,
+          title = "Einstellungen",
+          width = 12,
+          icon = icon("gear"),
+          status = "primary",
+          solidHeader = TRUE,
+          radioButtons(
+            inputId = "record",
+            HTML(paste("<b>","Maximum / Minimum","</b>")),
+            c("Maximum" = "Maximum", "Minimum" = "Minimum"),
+            selected = "Maximum"
+            )
+          )
+        ),
+        column(
               10,
               bs4InfoBox(
                 title = uiOutput("description5"),
