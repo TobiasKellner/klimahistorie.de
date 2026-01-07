@@ -23,70 +23,6 @@ source("~/klimahistorie.de/shiny/authentication/db_connection.R")
 
 options(rdwdlocdir = paste0(getwd(), "/DWDdata"))
 
-<<<<<<< HEAD
-# source database connection function
-
-Liste <- c(
-    "Berlin-Tempelhof",
-    "Erfurt-Weimar",
-    "Jena (Sternwarte)",
-    "Frankfurt/Main",
-    "Stuttgart-Echterdingen",
-    "Hannover",
-    "Hamburg-Neuwiedenthal",
-    "Koeln-Bonn",
-    "Potsdam",
-    "Duesseldorf",
-    "Dresden-Hosterwitz",
-    "Muenchen-Flughafen",
-    "Eschwege",
-    "Norderney",
-    "List auf Sylt",
-    "Schmuecke",
-    "Brocken",
-    "Fichtelberg",
-    "Feldberg/Schwarzwald",
-    "Zugspitze",
-    "Saarbruecken-Ensheim",
-    "Leipzig/Halle",
-    # "Mainz-Lerchenberg (ZDF)",
-    "Bremen",
-    "Kiel-Holtenau",
-    "Rostock-Warnemuende",
-    "Magdeburg",
-    "Schwerin",
-    "Grosser Arber",
-    "Nuernberg",
-    "Friedrichshafen",
-    "Cottbus",
-    "Kleiner Feldberg/Taunus",
-    "Muenster/Osnabrueck",
-    "Waren (Mueritz)",
-    "Eisenach",
-    "Gera-Leumnitz",
-    "Goettingen",
-    "Wuerzburg",
-    "Aachen-Orsbach",
-    "Wittenberg",
-    "Muehlhausen/Thueringen-Goermar",
-    "Freiburg",
-    "Ingolstadt (Flugplatz)",
-    "Regensburg",
-    "Chemnitz",
-    "Trier-Petrisberg",
-    "Freiburg/Elbe",
-    "Lenzen/Elbe",
-    "Luebeck-Blankensee",
-    "Fehmarn",
-    "Bremerhaven",
-    "Braunschweig",
-    "Augsburg",
-    "Helgoland"
-  ) %>%
-  sort()
-
-=======
->>>>>>> refs/remotes/origin/main
 
 # Import ------------------------------------------------------------------
 
@@ -97,13 +33,7 @@ Stationstabelle <- con %>%
   tbl("Stationstabelle") %>%
   collect()
 
-
-<<<<<<< HEAD
-
-map(Stationstabelle$Stationsname[1], ~{
-=======
 map(Stationstabelle$Stationsname[101:200], ~{
->>>>>>> refs/remotes/origin/main
 
   # download historical climate data
   df_historical <- readDWD(dataDWD(
@@ -181,7 +111,6 @@ map(Stationstabelle$Stationsname[101:200], ~{
   gc()
 
 })
-<<<<<<< HEAD
 
 
 # Transformation ----------------------------------------------------------
@@ -207,9 +136,3 @@ dbxUpsert(
   )
 
 dbDisconnect(con)
-
-
-
-
-=======
->>>>>>> refs/remotes/origin/main
