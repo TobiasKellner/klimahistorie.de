@@ -1,7 +1,8 @@
 # Intro -------------------------------------------------------------------
 
 # Author: TK
-# This script downloads all available data
+# Dieses Skript importiert die Stationstabelle aller gegenwärtigen deutschen
+# Wetterstationen und pflehgt diese in die Datenbank ein.
 
 
 # Setup -------------------------------------------------------------------
