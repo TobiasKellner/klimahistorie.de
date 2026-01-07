@@ -32,15 +32,18 @@ df <- df %>%
   filter(
     res == "daily",
     var == "kl",
+    hasfile == TRUE,
     bis_datum >= today() - years(2)
     ) %>%
   distinct(Stations_id, .keep_all = TRUE) %>%
-  select(Stations_id,
-         Stationshoehe,
-         geoBreite,
-         geoLaenge,
-         Stationsname,
-         Bundesland) %>%
+  select(
+    Stations_id,
+    Stationshoehe,
+    geoBreite,
+    geoLaenge,
+    Stationsname,
+    Bundesland
+    ) %>%
   rename(STATIONS_ID = Stations_id)
 
 

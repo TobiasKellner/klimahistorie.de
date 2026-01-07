@@ -1,28 +1,53 @@
-version: "3.8"
+version: "3.9"
 
 services:
+
   shiny-app:
-    image: klimahistorie.de
+    image: klimahistorie
+    container_name: klimahistorie
     build: .
-    deploy:
-      replicas: 3  # Automatische Skalierung: 3 Instanzen starten
-      restart_policy:
-        condition: on-failure
     ports:
       - "3838:3838"  # Shiny-App auf Port 3838 verfügbar
+    restart: unless-stopped
+    environment:
+      - SHINY_PORT=3838
+    networks:
+      - sp_network
+
+  nginx:
+    image: nginx:stable
+    container_name: shiny-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/ssl/fullchain.pem:/etc/ssl/certs/fullchain.pem:ro
+      - ./nginx/ssl/privkey.pem:/etc/ssl/private/privkey.pem:ro
+    depends_on:
+      - shiny-app
+    networks:
+      - sp_network
+
+networks:
+  sp_network:
+    driver: bridge
+
+
     #networks:
     #  - shiny-net
 
-  proxy:
-    image: traefik:v2.9
-    command:
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--entrypoints.web.address=:80"
-    ports:
-      - "3850:3838"  # Traefik als Reverse Proxy für Port 80
-      - "8080:8080"  # Traefik Dashboard
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+  # proxy:
+  #   image: traefik:v2.9
+  #   command:
+  #     - "--api.insecure=true"
+  #     - "--providers.docker=true"
+  #     - "--entrypoints.web.address=:80"
+  #   ports:
+  #     - "3850:3838"  # Traefik als Reverse Proxy für Port 80
+  #     - "8080:8080"  # Traefik Dashboard
+  #   volumes:
+  #     - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
 

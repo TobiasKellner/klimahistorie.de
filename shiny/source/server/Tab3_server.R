@@ -7,10 +7,6 @@ df3 <- reactive({
     tbl("Tagesdaten") %>%
     {if(input$month3 != 0) filter(., sql("EXTRACT(MONTH FROM \"DATUM\")") == input$month1) else .} %>%
     filter(Name_Station == input$selectLocation) %>%
-    # filter(year(DATUM) %in% year_vector) %>%
-    #{if(input$current_year == FALSE) filter(., DATUM <= as.Date("2024-12-31")) else .} %>%
-    #group_by(Jahr = year(DATUM)) %>%
-    #summarise(!!input$Variable1 := round(mean(!!sym(input$Variable1)), 1)) %>%
     collect()%>%
     mutate(Jahr = factor(year(DATUM)),
            date = update(DATUM, year = 1))

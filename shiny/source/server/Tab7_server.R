@@ -13,7 +13,7 @@ icon <- reactive({
   iconColor = '#FFFFFF',
   library = 'fa',
   spin = TRUE,
-  markerColor = ifelse(df_stationstabelle()$Stationsname == input$selectLocation, 'red', 'blue'))
+  markerColor = ifelse(df_stationstabelle()$Stationsname == input$selectLocation, 'red', 'lightgray'))
 })
 
 output$map_overview <- renderLeaflet({

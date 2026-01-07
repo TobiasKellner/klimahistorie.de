@@ -14,15 +14,26 @@ source("source/UI/Tab8_UI.R")
 # UI ----------------------------------------------------------------------
 
 dashboardPage(
-
   help = NULL,
 
   # dashboardheader
   header = dashboardHeader(
-    title = dashboardBrand(
-      title = HTML("<strong>Klimahistorie.de</strong>"),
-      color = "primary"
+    title = div(
+      style = "display: flex; align-items: center; gap: 10px; margin-left: 8px;",
+      tags$a(
+        href = "https://klimahistorie.de",
+        target = "_blank",
+        tags$img(
+          src = "logo.png",
+          alt = "Klimahistorie.de",
+          style = "height: 32px; width: auto; display: block;"
+        )
       ),
+      dashboardBrand(
+        title = HTML("<strong>Klimahistorie.de</strong>"),
+        color = "primary"
+      )
+    ),
     status = "primary",
     controlbarIcon = NULL,
     fixed = TRUE,
@@ -42,32 +53,44 @@ dashboardPage(
       ),
       style = "position: absolute; right: 20px;"
     )
-    ),
+  ),
 
   # sidebar
   sidebar = dashboardSidebar(
     status = "primary",
     sidebarMenu(
-
-      menuItem("Durchschnitte & Trends", tabName = "tab1", icon = icon("chart-simple")),
+      menuItem(
+        "Durchschnitte & Trends",
+        tabName = "tab1",
+        icon = icon("chart-simple")
+      ),
       menuItem("Tageswerte", tabName = "tab2", icon = icon("map-marked-alt")),
       menuItem("Jahresvergleich", tabName = "tab3", icon = icon("chart-line")),
       menuItem("Tageshistorie", tabName = "tab4", icon = icon("calendar-alt")),
       menuItem("Klimarekorde", tabName = "tab5", icon = icon("trophy")),
-      menuItem("Tage über & unter", tabName = "tab6", icon = icon("thermometer-half")),
-      menuItem("Stationsübersicht", tabName = "overview", icon = icon("map-marker-alt")),
+      menuItem(
+        "Tage über & unter",
+        tabName = "tab6",
+        icon = icon("thermometer-half")
+      ),
+      menuItem(
+        "Stationsübersicht",
+        tabName = "overview",
+        icon = icon("map-marker-alt")
+      ),
       menuItem("Über die Web-App", tabName = "about", icon = icon("info")),
 
       actionButton(
-        "button1",
-        HTML("Benötigen Sie Hilfe bei<br/>Datenprozessen,<br/>statistischen Auswertungen &<br/>Automatisierungen?"),
-        style="color: white; background-color: #ec7063 ; border-radius: 10px !important;
+        inputId = "button1",
+        label = "",
+        # label = HTML(
+        #   "Benötigen Sie Hilfe bei<br/>Datenprozessen,<br/>statistischen Auswertungen &<br/>Automatisierungen?"
+        # ),
+        style = "color: white; background-color: #ec7063 ; border-radius: 10px !important;
         border: none; position: fixed; margin-left: 5px; bottom: 10px;"
-        )
-
       )
-
-    ),
+    )
+  ),
 
   # controlbar
   controlbar = dashboardControlbar(
@@ -87,8 +110,8 @@ dashboardPage(
       selectizeInput(
         "selectLocation",
         "Standort auswählen:",
-        Stationsliste,
-        selected = Stationsliste[1]
+        stations_liste,
+        selected = stations_liste[1]
       ),
       leafletOutput("mymap")
     )
@@ -96,13 +119,11 @@ dashboardPage(
 
   # body
   body = dashboardBody(
-
     useShinyjs(),
     includeCSS("www/custom.css"),
     includeScript(path = "www/custom.js"),
 
     tabItems(
-
       # Tab1 - Durchschnitte & Trends
       Tab1_UI_function(),
 
@@ -126,7 +147,6 @@ dashboardPage(
 
       # Tab8 - About
       Tab8_UI_function()
-
-      )
     )
   )
+)

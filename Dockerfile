@@ -1,59 +1,41 @@
-# Basis-Image mit R und Shiny-Server
-FROM rocker/shiny:latest
+FROM rocker/shiny-verse:4.5.0
 
-# Systemabhängigkeiten für R-Pakete installieren
-RUN apt-get update && apt-get install -y \
+# System-Abhängigkeiten installieren
+RUN apt-get update && apt-get install -y --no-install-recommends \
     libcurl4-openssl-dev \
+    git \
+    curl \
     libssl-dev \
     libxml2-dev \
-    libpq-dev
+    libpq-dev \
+    libuv1-dev \
+    libgdal-dev \
+    libgeos-dev \
+    libproj-dev \
+    libudunits2-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# create shiny directory inlcuding renv
-RUN mkdir -p /home/user1/shiny/renv
+# App kopieren
+# App unter Shiny-Benutzer kopieren
+COPY shiny /srv/shiny-server
+COPY renv.lock /srv/shiny-server/renv.lock
+COPY renv/activate.R /srv/shiny-server/renv/activate.R
+RUN chown -R shiny:shiny /srv/shiny-server
 
-# copy shiny app into container
-COPY shiny /home/user1/shiny
+RUN mkdir -p /var/log/shiny-server /var/lib/shiny-server/bookmarks \
+    && chown -R shiny:shiny /var/log/shiny-server /var/lib/shiny-server
 
-# copy renv project files into container
-COPY renv.lock /home/user1/shiny/renv.lock
-COPY renv/activate.R /home/user1/shiny/renv/activate.R
+# Arbeitsverzeichnis setzen
+WORKDIR /srv/shiny-server
 
-# create user user1 (uid/gid same as on host)
-#RUN groupadd -g 1090 user1 && \
-#    useradd -u 1090 -g 1090 user1 && \
-#    chown -R user1:user1 /home/user1
+# R-Paket 'renv' installieren
+RUN R -e "install.packages('renv', repos='https://cloud.r-project.org')"
 
-RUN useradd -m user1
-RUN chown -R user1:user1 /home/user1
+# Pakete installieren
+RUN R -e "renv::restore(prompt = FALSE)"
 
-RUN mkdir -p /usr/local/lib/R/site-library && \
-    chown -R user1:user1 /usr/local/lib/R/site-library && \
-    chmod -R 777 /usr/local/lib/R/site-library
+EXPOSE 3838
 
-
-# switch to user user1 and set working directory
-USER user1
-WORKDIR /home/user1/shiny
-
-# define libPaths to be within user directory
-#RUN mkdir -p /home/user1/R/x86_64-pc-linux-gnu-library/4.3
-#RUN echo ".libPaths('/home/user1/R/x86_64-pc-linux-gnu-library/4.3')" \
-#      >> /home/user1/shiny/.Rprofile
-
-# install R packages
-#ENV RENV_VERSION 1.0.11
-#RUN R -e "install.packages(\
-#      'remotes', repos = c(CRAN = 'https://cloud.r-project.org')\
-#      )"
-#RUN R -e "remotes::install_github('rstudio/renv')"
-
-
-# Installiere Abhängigkeiten (falls nötig)
-RUN R -e "install.packages(c('shiny', 'remotes', 'renv', 'config', 'ggplot2', 'dplyr', 'dbplyr', 'shinyjs', 'shinycssloaders', 'bs4Dash', 'htmltools', 'lubridate', 'purrr', 'stringr', 'plotly', 'leaflet', 'DBI', 'RPostgres'))"
-
-
-# set working directory to shiny app root directory
-WORKDIR /home/user1/shiny
-
-# Starte den Shiny-Server mit dem neuen App-Pfad
-CMD ["R", "-e", "shiny::runApp(host='0.0.0.0', port=3838, launch.browser = FALSE)"]
+# Shiny Server starten
+CMD ["/usr/bin/shiny-server"]

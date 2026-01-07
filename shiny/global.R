@@ -25,8 +25,7 @@ con <- db_connection()
 onStop(function() {
   dbDisconnect(con)
   print("DB-connection closed")
-  })
-
+})
 
 
 # create named month vector
@@ -50,5 +49,8 @@ month_list <- setNames(
 )
 
 # query station list
-Stationsliste <- dbGetQuery(con, "SELECT DISTINCT \"Name_Station\" FROM \"Tagesdaten\"") %>%
+stations_liste <- dbGetQuery(
+  con,
+  "SELECT DISTINCT \"Name_Station\" FROM \"Tagesdaten\""
+) |>
   pull(Name_Station)
