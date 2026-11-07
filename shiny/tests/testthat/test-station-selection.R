@@ -1,9 +1,20 @@
-testthat::test_that("all tabs receive the same station list from a single query", {
+testthat::test_that("station defaults handle missing and empty station lists", {
+  testthat::expect_identical(
+    app_functions$station_default_selection(c("Aachen" = "2")),
+    "2"
+  )
+  testthat::expect_identical(
+    app_functions$station_default_selection(character()),
+    character()
+  )
+})
+
+testthat::test_that("all tabs default to Erfurt-Weimar from a single query", {
   calls <- 0L
   provider <- function(pool) {
     testthat::expect_identical(pool, "fake")
     calls <<- calls + 1L
-    c("Aachen (2)" = "2", "Zugspitze (9)" = "9")
+    c("Aachen" = "2", "Erfurt-Weimar" = "test-erfurt", "Zugspitze" = "9")
   }
   messages <- list()
   server <- function(input, output, session) {
@@ -33,9 +44,10 @@ testthat::test_that("all tabs receive the same station list from a single query"
         "thresholds"
       )) {
         message <- messages[[paste0(id, "-station")]]
-        testthat::expect_identical(message$value, "2")
-        testthat::expect_match(message$options, "Aachen (2)", fixed = TRUE)
-        testthat::expect_match(message$options, "Zugspitze (9)", fixed = TRUE)
+        testthat::expect_identical(message$value, "test-erfurt")
+        testthat::expect_match(message$options, "Aachen", fixed = TRUE)
+        testthat::expect_match(message$options, "Erfurt-Weimar", fixed = TRUE)
+        testthat::expect_match(message$options, "Zugspitze", fixed = TRUE)
       }
     }
   )

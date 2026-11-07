@@ -60,7 +60,7 @@ mod_daily_values_server <- function(
           session,
           "station",
           choices = choices,
-          selected = if (length(choices)) unname(choices[[1L]]) else character()
+          selected = station_default_selection(choices)
         )
       },
       once = TRUE

@@ -1,3 +1,11 @@
+station_default_selection <- function(choices) {
+  preferred <- which(names(choices) == "Erfurt-Weimar")
+  if (length(preferred)) {
+    return(unname(choices[[preferred[[1L]]]]))
+  }
+  if (length(choices)) unname(choices[[1L]]) else character()
+}
+
 station_selection_server <- function(session, db_pool, stations) {
   station_choices <- shiny::reactiveVal(character())
   shiny::observeEvent(
@@ -16,7 +24,7 @@ station_selection_server <- function(session, db_pool, stations) {
         session,
         "station",
         choices = choices,
-        selected = if (length(choices)) unname(choices[[1L]]) else character()
+        selected = station_default_selection(choices)
       )
     },
     once = TRUE
