@@ -1,0 +1,106 @@
+/* Archiv: Styles der früheren AdminLTE-App; nicht eingebunden. */
+/* Dunkel-Option in der Navbar nach links verschieben */
+.ml-2, .mx-2 {
+    margin-left: 0.5rem !important;
+    position: absolute;
+    right: 160px;
+    margin-top: 0px;
+}
+
+/* Sidebar Titel anzeigen, auch wenn eingeklappt */
+.sidebar-mini.sidebar-collapse .brand-text {
+  all: unset;
+}
+
+/* Sidebar Titel zentrieren */
+[class*='sidebar-light'] .brand-link {
+  text-align: center;
+}
+
+/* Sidebar items */
+.nav-sidebar .nav-item > .nav-link {
+  padding: 1.2rem 1rem;
+  font-size: 1.1rem;
+}
+.nav-sidebar .nav-treeview > .nav-item > .nav-link {
+  padding: 0.9rem 1rem 0.9rem 2.5rem;
+  font-size: 1rem;
+}
+.nav-sidebar .nav-icon {
+  font-size: 1.3rem;
+}
+
+/* Icon bzW. Pin-Symbol der Controlbar verstecken */
+#controlbarPin { display: none !important; }
+
+/* Box 'selectLocation' in der Controlbar heruntersetzen */
+#boxLocation { margin-top: 10px !important;;}
+
+img {border-radius: 20px;}
+
+
+
+
+
+.flip-container {
+        /* perspective: 1000px;*/
+        width: 100%;
+        height: 80%;
+        min-height: 200px;
+      }
+.flipper {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transform-style: preserve-3d;
+        transition: transform 0.6s;
+      }
+      .flip-container:hover .flipper {
+        transform: rotateY(180deg);
+      }
+      .front, .back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+      }
+      .front {
+        z-index: 2;
+        transform: rotateY(0deg);
+      }
+      .back {
+        transform: rotateY(180deg);
+        background-color: #f8f9fa;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 20px;
+        background-color: white;
+        padding: 20px;
+        border: 3px solid #007bff;
+        color: #007bff;
+      }
+
+#mymap {
+  height: 300px !important;
+  visibility: inherit;
+  position: relative;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  border-left-width: 2px;
+  border-left-style: solid;
+  border-right-width: 2px;
+  border-right-style: solid;
+  border-top-width: 2px;
+  border-top-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-style: solid;
+  border-radius: 10px;
+}
+
+/* Info-Box */
+.info-box {
+  margin-bottom: 0px;
+}
+
+

@@ -1,0 +1,82 @@
+{
+  "permission": {
+    "bash": {
+      "git checkout *": "allow",
+      "cp *": "allow",
+      "convert *": "allow",
+      "node *": "allow",
+      "git remote *": "allow",
+      "git status *": "allow",
+      "git ls-files *": "allow",
+      "git grep *": "allow",
+      "git -C /home/tobias_k/klimahistorie.de grep *": "allow",
+      "true *": "allow",
+      "printf *": "allow",
+      "git -C /home/tobias_k/klimahistorie.de ls-files *": "allow",
+      "awk *": "allow",
+      "find *": "allow",
+      "sort *": "allow",
+      "git -C /home/tobias_k/klimahistorie.de branch *": "allow",
+      "git -C /home/tobias_k/klimahistorie.de status *": "allow",
+      "grep *": "allow",
+      "git -C /home/tobias_k/klimahistorie.de log *": "allow",
+      "git config *": "allow",
+      "rg *": "allow",
+      "git -C /home/tobias_k/klimahistorie.de check-ignore *": "allow",
+      "git -C /home/tobias_k/klimahistorie.de ls-tree *": "allow",
+      "head *": "allow",
+      "test *": "allow",
+      "mv *": "allow",
+      "git diff *": "allow",
+      "git check-ignore *": "allow",
+      "command *": "allow",
+      "docker compose exec *": "allow",
+      "python3 *": "allow",
+      "git show *": "allow",
+      "nl *": "allow",
+      "sed *": "allow",
+      "git log *": "allow",
+      "docker *": "allow",
+      "docker compose version *": "allow",
+      "git branch *": "allow",
+      "Rscript *": "allow",
+      "git add *": "allow"
+    },
+    "executeCode": {
+      "*": "allow"
+    },
+    "edit": {
+      "*.R": "allow",
+      "*.js": "allow",
+      "*.css": "allow",
+      "*.md": "allow",
+      "*/Dockerfile": "allow",
+      "*.yml": "allow",
+      "*/.Renviron": "allow",
+      "*/.dockerignore": "allow"
+    },
+    "external_directory": {
+      "/home/tobias_k/.cache/R/renv/cache/v5/linux-debian-bookworm/R-4.5/x86_64-pc-linux-gnu/bslib/0.12.0/b2d0b0a17142ed4858f252d88eb56223/bslib/components/dist/*": "allow",
+      "/home/tobias_k/.local/state/positron/logs/20261106T070104/exthost13/posit.assistant/tools/executeCode/*": "allow",
+      "/home/tobias_k/.cache/oak/source/v1/cran/sass_0.4.10/R/*": "allow",
+      "/home/tobias_k/.cache/R/renv/cache/v5/linux-debian-bookworm/R-4.5/x86_64-pc-linux-gnu/leaflet/2.2.3/da8aa03b2885c2b934923e6a53fe592a/*": "allow"
+    },
+    "task": {
+      "general": "allow"
+    },
+    "positronCommand": {
+      "positronPackages.getPackages": "allow",
+      "positronPackages.installPackage": "allow",
+      "vscode.open": "allow",
+      "shiny.r.runApp": "allow",
+      "positronRunApp.stopApp": "allow"
+    },
+    "webfetch": {
+      "https://www.brevo.com/*": "allow",
+      "https://help.brevo.com/*": "allow"
+    },
+    "read": {
+      "*.example": "allow"
+    }
+  }
+}
