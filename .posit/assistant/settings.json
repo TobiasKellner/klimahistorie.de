@@ -42,7 +42,10 @@
       "Rscript *": "allow",
       "git add *": "allow",
       "git commit *": "allow",
-      "git push *": "allow"
+      "git push *": "allow",
+      "docker compose ps *": "allow",
+      "curl *": "allow",
+      "docker compose logs *": "allow"
     },
     "executeCode": {
       "*": "allow"
@@ -71,7 +74,8 @@
       "positronPackages.installPackage": "allow",
       "vscode.open": "allow",
       "shiny.r.runApp": "allow",
-      "positronRunApp.stopApp": "allow"
+      "positronRunApp.stopApp": "allow",
+      "workbench.action.positronPreview.openUrl": "allow"
     },
     "webfetch": {
       "https://www.brevo.com/*": "allow",

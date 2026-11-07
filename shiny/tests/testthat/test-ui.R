@@ -28,6 +28,33 @@ testthat::test_that("the composed app has unique IDs and no legacy scripts", {
   testthat::expect_match(html, "app-logo", fixed = TRUE)
 })
 
+testthat::test_that("UTF-8 UI labels survive a non-UTF-8 locale", {
+  labels <- withr::with_locale(c(LC_CTYPE = "C"), {
+    env <- new.env(parent = globalenv())
+    eval(
+      parse(
+        text = readLines(
+          file.path(app_dir, "R", "app_config.R"),
+          encoding = "UTF-8",
+          warn = FALSE
+        ),
+        encoding = "UTF-8",
+        keep.source = FALSE
+      ),
+      envir = env
+    )
+    enc2utf8(env$app_navigation()$label)
+  })
+  testthat::expect_identical(
+    labels[6:8],
+    c(
+      "Tage \u00fcber & unter",
+      "Stations\u00fcbersicht",
+      "\u00dcber die Web-App"
+    )
+  )
+})
+
 testthat::test_that("the entry point works from root and app directory", {
   from_root <- withr::with_dir(
     dirname(app_dir),

@@ -14,7 +14,15 @@ local({
     '\\.R$',
     full.names = TRUE
   ))) {
-    sys.source(file, envir = app_env)
+    # Preserve Unicode even when the process uses a non-UTF-8 locale.
+    eval(
+      parse(
+        text = readLines(file, encoding = "UTF-8", warn = FALSE),
+        encoding = "UTF-8",
+        keep.source = FALSE
+      ),
+      envir = app_env
+    )
   }
   database <- app_env$database_lifecycle()
   shiny::shinyApp(

@@ -1,5 +1,10 @@
 # Docker-Betrieb
 
+Für das Deployment auf AlmaLinux mit dem bereits installierten **Host-Nginx**
+gilt die ausführliche [Deployment- und Nginx-Anleitung](DEPLOYMENT-NGINX.md).
+In dieser Variante nur `docker compose up -d postgres shiny-app` verwenden;
+der zusätzliche Compose-Nginx würde mit dem vorhandenen Proxy kollidieren.
+
 Das Produktionsimage enthält die aktuelle App unter `shiny/` und startet sie
 direkt mit `shiny::runApp()`. Ein zusätzlicher Shiny Server ist nicht erforderlich.
 Der Prozess läuft mit UID/GID `10001:10001`; App-Dateien und Paketbibliothek
@@ -106,7 +111,7 @@ Für einen unabhängigen App-Test genügt der oben beschriebene `docker run`.
 
 ### PostgreSQL vorbereiten und starten
 
-Vor dem ersten Start zwei unterschiedliche Passwortdateien anlegen, beispielsweise
+Vor dem ersten Start drei unterschiedliche Passwortdateien anlegen, beispielsweise
 auf dem Deployment-Server aus der Projektwurzel:
 
 ```bash
@@ -114,11 +119,19 @@ mkdir -p secrets
 chmod 700 secrets
 openssl rand -hex 32 > secrets/postgres_admin_password
 openssl rand -hex 32 > secrets/postgres_app_password
+openssl rand -hex 32 > secrets/postgres_etl_password
 chmod 444 secrets/postgres_admin_password secrets/postgres_app_password
+chmod 600 secrets/postgres_etl_password
 docker compose config --quiet
 docker compose up -d postgres
+bash db/migrate.sh
+bash db/set-etl-password.sh
 docker compose up -d --build shiny-app
 ```
+
+Dieses Beispiel gilt nur für eine Erstinstallation; vorhandene Passwortdateien
+nicht überschreiben. Die ausführliche Anleitung zeigt eine Variante, die nur
+fehlende Dateien erzeugt.
 
 Die Dateien sind aus Git und dem Image ausgeschlossen. Alternativ können ihre
 Pfade über `.env` gemäß `.env.example` auf Dateien außerhalb des Repositories
@@ -145,8 +158,8 @@ das Lesebenutzer-Passwort aus der Secret-Datei. Fehlende Teilkonfiguration oder
 fehlgeschlagene Anmeldung bricht den Start ab; ohne sämtliche DB-Einstellungen
 ist ein lokaler Start ohne Datenbank möglich. Der Pool wird beim App-Stop geschlossen,
 nicht beim Ende einzelner Sitzungen. Er prüft Verbindungen bei jeder Entnahme und
-ersetzt ungültige Verbindungen. Die Ansichten laden noch keine Klimadaten; hierfür
-werden anschließend konkrete Tabellen und fachliche Abfragen benötigt.
+ersetzt ungültige Verbindungen. Die Ansichten benötigen die Tabellen und View aus
+den Migrationen sowie anschließend über ETL importierte Stations- und Tagesdaten.
 Es wird kein passwortloser Zugriff eingerichtet. Die Host-Anmeldung verwendet
 SCRAM-SHA-256; das interne Docker-Netz allein ist keine TLS-Verschlüsselung.
 Für hostübergreifende oder strengere Sicherheitsanforderungen zusätzlich TLS
@@ -156,7 +169,8 @@ Beim erstmaligen Initialisieren eines leeren Volumes legt das Init-Skript den
 Lesenutzer an. Er kann vorhandene Tabellen im Schema `public` lesen und erhält
 Leserechte auf künftige Tabellen, die `postgres` dort erstellt. Bei anderen
 Tabellenbesitzern oder Schemas die Grants und Default Privileges gezielt ergänzen.
-Ein eigener ETL-Schreibnutzer sowie Tabellen/Migrationen werden noch nicht angelegt.
+Der ETL-Schreibnutzer und die fachlichen Tabellen werden durch die anschließend
+auszuführenden Migrationen angelegt, nicht durch das PostgreSQL-Init-Skript selbst.
 
 Das Init-Skript läuft nicht erneut auf bestehenden Datenvolumes. Das Austauschen
 einer Passwortdatei ändert deshalb kein bestehendes Datenbankpasswort; Rotation

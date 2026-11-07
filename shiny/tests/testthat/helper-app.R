@@ -5,5 +5,12 @@ for (file in sort(list.files(
   "\\.R$",
   full.names = TRUE
 ))) {
-  sys.source(file, envir = app_functions)
+  eval(
+    parse(
+      text = readLines(file, encoding = "UTF-8", warn = FALSE),
+      encoding = "UTF-8",
+      keep.source = FALSE
+    ),
+    envir = app_functions
+  )
 }
