@@ -13,12 +13,12 @@ testthat::test_that("navigation forwards valid values and ignores unknown ones",
     for (id in app_functions$app_navigation()$id) {
       session$setInputs(sidebar_tabs = id)
     }
-    testthat::expect_length(calls, 8L)
+    testthat::expect_length(calls, 9L)
     testthat::expect_identical(
       vapply(calls, `[[`, "", "selected"),
       app_functions$app_navigation()$id
     )
     session$setInputs(sidebar_tabs = "unknown")
-    testthat::expect_length(calls, 8L)
+    testthat::expect_length(calls, 9L)
   })
 })

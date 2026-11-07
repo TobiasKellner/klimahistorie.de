@@ -7,6 +7,7 @@ app_navigation <- function() {
       "daily_history",
       "records",
       "thresholds",
+      "overview",
       "stations",
       "about"
     ),
@@ -17,6 +18,7 @@ app_navigation <- function() {
       "Tageshistorie",
       "Klimarekorde",
       "Tage über & unter",
+      "Klima auf einen Blick",
       "Stationsübersicht",
       "Über die Web-App"
     ),
@@ -27,6 +29,7 @@ app_navigation <- function() {
       "history",
       "trophy",
       "arrows-alt-v",
+      "eye",
       "map-marked-alt",
       "info-circle"
     ),

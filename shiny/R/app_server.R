@@ -19,6 +19,11 @@ app_server <- function(
   # All tabs share one metadata snapshot per browser session.
   station_snapshot <- shiny::reactive(stations(db_pool))
   station_provider <- function(pool) station_snapshot()
+  mod_overview_server(
+    "overview",
+    db_pool = db_pool,
+    stations = station_provider
+  )
   mod_trends_server("trends", db_pool = db_pool, stations = station_provider)
   mod_daily_values_server(
     "daily_values",

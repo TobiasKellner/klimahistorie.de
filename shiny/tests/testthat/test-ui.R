@@ -1,5 +1,5 @@
 testthat::test_that("module inputs and native collapse controls are namespaced", {
-  ids <- head(app_functions$app_navigation()$id, 6)
+  ids <- head(app_functions$app_navigation()$id, 7)
   for (id in ids) {
     ui <- app_functions[[paste0("mod_", id, "_ui")]](id)
     html <- htmltools::renderTags(ui)$html
@@ -46,7 +46,7 @@ testthat::test_that("UTF-8 UI labels survive a non-UTF-8 locale", {
     enc2utf8(env$app_navigation()$label)
   })
   testthat::expect_identical(
-    labels[6:8],
+    labels[c(6, 8, 9)],
     c(
       "Tage \u00fcber & unter",
       "Stations\u00fcbersicht",

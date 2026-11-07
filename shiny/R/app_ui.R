@@ -7,6 +7,7 @@ app_ui <- function(app_dir = ".") {
     daily_history = mod_daily_history_ui("daily_history"),
     records = mod_records_ui("records"),
     thresholds = mod_thresholds_ui("thresholds"),
+    overview = mod_overview_ui("overview"),
     stations = view_stations_ui(),
     about = view_about_ui()
   )

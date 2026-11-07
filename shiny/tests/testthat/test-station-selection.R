@@ -41,7 +41,8 @@ testthat::test_that("all tabs default to Erfurt-Weimar from a single query", {
         "year_comparison",
         "daily_history",
         "records",
-        "thresholds"
+        "thresholds",
+        "overview"
       )) {
         message <- messages[[paste0(id, "-station")]]
         testthat::expect_identical(message$value, "test-erfurt")
