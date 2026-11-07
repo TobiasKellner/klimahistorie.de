@@ -53,7 +53,8 @@ navigation_sidebar_ui <- function(navigation = app_navigation()) {
           icon = shiny::icon("hand-pointer"),
           class = "btn-danger w-100"
         ),
-        "Benötigen Sie Hilfe im Bereich Datenanalyse? Schreiben Sie mir eine Nachricht!",
+        shiny::tags$strong("Werbung in eigener Sache:"),
+        " Benötigen Sie Hilfe im Bereich Datenanalyse? Schreiben Sie mir eine Nachricht!",
         placement = "top"
       )
     )

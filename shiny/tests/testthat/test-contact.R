@@ -2,6 +2,11 @@ testthat::test_that("the sidebar contains a contact action button", {
   html <- htmltools::renderTags(app_functions$navigation_sidebar_ui())$html
   testthat::expect_match(html, 'id="show_contact"', fixed = TRUE)
   testthat::expect_match(html, "sidebar-contact", fixed = TRUE)
+  testthat::expect_match(
+    html,
+    "<strong>Werbung in eigener Sache:</strong>",
+    fixed = TRUE
+  )
 })
 
 testthat::test_that("the contact modal includes advertising images without a mailto link", {
