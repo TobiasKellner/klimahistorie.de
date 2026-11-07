@@ -94,8 +94,10 @@ archivierte Styles, ETL, lokale Konfigurationen und Secrets sind ausgeschlossen.
 
 ## Compose und Produktion
 
-`docker-compose.yml` enthält Shiny, PostgreSQL 17 und Nginx. PostgreSQL ist nur
-im internen `database_network` erreichbar und veröffentlicht keinen Host-Port.
+`docker-compose.yml` enthält Shiny, PostgreSQL 17 und Nginx. PostgreSQL ist im
+`database_network` intern auf Port 5432 erreichbar; für hostseitige Imports wird
+zusätzlich ausschließlich `127.0.0.1:5433` veröffentlicht. Eine bestehende
+PostgreSQL-Installation auf Host-Port 5432 bleibt damit unverändert.
 Shiny verbindet dieses Netz mit dem Proxy-Netz; Nginx selbst hat keinen Zugang
 zum Datenbanknetz. Der direkte Shiny-Port 3838 ist nur an localhost gebunden.
 Der konfigurierte Nginx benötigt externe Konfiguration und Zertifikate

@@ -14,7 +14,7 @@ Beispiel für die R-Konsole auf dem Docker-Host:
 ```r
 Sys.setenv(
   PGHOST = "127.0.0.1",
-  PGPORT = "5432",
+  PGPORT = "5433",
   PGDATABASE = "klimahistorie",
   PGUSER = "climate_etl",
   DB_PASSWORD_FILE = normalizePath("secrets/postgres_etl_password", mustWork = TRUE)
@@ -28,8 +28,9 @@ local({
 ```
 
 In einem ETL-Container im Datenbanknetz ist `PGHOST=postgres` und der Passwortpfad
-zeigt auf das gemountete Secret. Compose bindet PostgreSQL ausschließlich an
-`127.0.0.1:5432`. Migration `003` legt `climate_etl` mit `SELECT`, `INSERT`, `UPDATE`
+zeigt auf das gemountete Secret; der interne Port bleibt `5432`.
+Compose bindet PostgreSQL auf dem Host ausschließlich an `127.0.0.1:5433`.
+Migration `003` legt `climate_etl` mit `SELECT`, `INSERT`, `UPDATE`
 und Sequenznutzung an; Tabellenanlage und Löschen sind nicht erlaubt.
 Standardrechte gelten für zukünftige Tabellen, die `postgres` im Schema `public` erstellt.
 `climate_reader` bleibt ohne Import-Schreibrechte.
