@@ -40,7 +40,9 @@
       "docker compose version *": "allow",
       "git branch *": "allow",
       "Rscript *": "allow",
-      "git add *": "allow"
+      "git add *": "allow",
+      "git commit *": "allow",
+      "git push *": "allow"
     },
     "executeCode": {
       "*": "allow"
