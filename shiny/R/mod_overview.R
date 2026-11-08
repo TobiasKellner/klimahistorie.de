@@ -1,7 +1,7 @@
 mod_overview_ui <- function(id) {
   ns <- shiny::NS(id)
   filter_card_ui(
-    "Klima auf einen Blick",
+    station_map_header("Klima auf einen Blick", ns),
     ns("filters"),
     controls = shiny::tagList(
       shiny::selectInput(ns("station"), "Station", app_station_choices()),
@@ -15,9 +15,14 @@ mod_overview_ui <- function(id) {
       class = "climate-overview",
       shiny::uiOutput(ns("headline")),
       shiny::uiOutput(ns("values")),
-      bslib::card(
-        bslib::card_header(shiny::icon("clipboard-check"), " Datenqualität"),
-        shiny::uiOutput(ns("quality"))
+      bslib::accordion(
+        bslib::accordion_panel(
+          "Datenqualität",
+          shiny::uiOutput(ns("quality")),
+          icon = shiny::icon("clipboard-check")
+        ),
+        id = ns("quality_details"),
+        open = FALSE
       ),
       bslib::accordion(
         bslib::accordion_panel(
@@ -34,7 +39,21 @@ mod_overview_ui <- function(id) {
               "Tage mit einer Maximaltemperatur von mindestens 30 °C (TXK)."
             ),
             shiny::tags$dt("Niederschlagssumme"),
-            shiny::tags$dd("Summe der täglichen Niederschlagshöhen (RSK).")
+            shiny::tags$dd("Summe der täglichen Niederschlagshöhen (RSK)."),
+            shiny::tags$dt("Maximal- und Minimaltemperatur"),
+            shiny::tags$dd(
+              "Höchste Tagesmaximaltemperatur (TXK) und niedrigste ",
+              "Tagesminimaltemperatur (TNK) des Jahres, jeweils mit Datum. ",
+              "Bei Gleichstand wird der erste Tag angezeigt."
+            ),
+            shiny::tags$dt("Sonnenscheindauer"),
+            shiny::tags$dd(
+              "Summe der täglichen Sonnenscheindauer in Stunden (SDK)."
+            ),
+            shiny::tags$dt("Tage mit Schneedecke"),
+            shiny::tags$dd(
+              "Tage mit gemessener Schneehöhe über 0 cm (SHK_TAG)."
+            )
           ),
           shiny::p(
             "Die Referenz 1991–2020 wird je Kennzahl nur angezeigt, wenn alle ",
@@ -71,10 +90,21 @@ mod_overview_server <- function(
   id,
   db_pool = NULL,
   stations = trends_station_choices,
-  annual = overview_annual_data
+  annual = overview_annual_data,
+  location = function(pool, station) stations_map_data(pool, station = station),
+  show = shiny::showModal
 ) {
   shiny::moduleServer(id, function(input, output, session) {
     choices <- station_selection_server(session, db_pool, stations)
+    station_map_modal_server(
+      input,
+      output,
+      session,
+      db_pool,
+      choices,
+      location,
+      show
+    )
     data <- shiny::reactive({
       shiny::validate(shiny::need(
         length(choices()) > 0L,
@@ -112,13 +142,9 @@ mod_overview_server <- function(
       shiny::tags$div(
         class = "overview-hero",
         shiny::tags$div(
-          shiny::tags$span(
-            class = "overview-eyebrow",
-            "DEIN LOKALER KLIMARÜCKBLICK"
-          ),
           shiny::tags$h2(label),
           shiny::p(
-            "Vier Perspektiven auf das Kalenderjahr ",
+            "Acht Kennzahlen aus dem Kalenderjahr ",
             shiny::strong(row$year)
           )
         ),
@@ -132,7 +158,33 @@ mod_overview_server <- function(
         key <- metrics$key[[i]]
         reference <- overview_reference(data(), key)
         value <- row[[key]][[1L]]
-        comparison <- if (is.finite(value) && is.finite(reference)) {
+        extreme <- key %in% c("max_temperature", "min_temperature")
+        count <- row[[paste0("n_", key)]][[1L]]
+        comparison <- if (!is.finite(value)) {
+          if (is.na(count) || count == 0L) {
+            "Keine gültigen Tageswerte vorhanden"
+          } else if (row$year >= as.integer(format(Sys.Date(), "%Y"))) {
+            paste(count, "von", row$expected, "Tageswerten · laufendes Jahr")
+          } else {
+            paste(
+              count,
+              "von",
+              row$expected,
+              "gültigen Tageswerten · Jahresreihe unvollständig"
+            )
+          }
+        } else if (extreme) {
+          date <- row[[paste0(key, "_date")]][[1L]]
+          if (is.finite(value) && !is.na(date)) {
+            paste(
+              "am",
+              format(date, "%d.%m.%Y"),
+              "· erster Tag bei Gleichstand"
+            )
+          } else {
+            "Kein vollständiger Jahreswert verfügbar"
+          }
+        } else if (is.finite(value) && is.finite(reference)) {
           difference <- value - reference
           paste0(
             if (difference > 0) "+" else "",

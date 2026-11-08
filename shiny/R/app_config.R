@@ -20,7 +20,7 @@ app_navigation <- function() {
       "Tage über & unter",
       "Klima auf einen Blick",
       "Stationsübersicht",
-      "Über die Web-App"
+      "Über Klimashistorie.de"
     ),
     icon = c(
       "chart-line",

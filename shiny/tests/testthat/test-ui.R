@@ -50,7 +50,7 @@ testthat::test_that("UTF-8 UI labels survive a non-UTF-8 locale", {
     c(
       "Tage \u00fcber & unter",
       "Stations\u00fcbersicht",
-      "\u00dcber die Web-App"
+      "\u00dcber Klimashistorie.de"
     )
   )
 })
