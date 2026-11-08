@@ -45,7 +45,9 @@
       "git push *": "allow",
       "docker compose ps *": "allow",
       "curl *": "allow",
-      "docker compose logs *": "allow"
+      "docker compose logs *": "allow",
+      "xargs *": "allow",
+      "docker compose -f docker-compose.yml *": "allow"
     },
     "executeCode": {
       "*": "allow"
@@ -58,13 +60,16 @@
       "*/Dockerfile": "allow",
       "*.yml": "allow",
       "*/.Renviron": "allow",
-      "*/.dockerignore": "allow"
+      "*/.dockerignore": "allow",
+      "*.example": "allow"
     },
     "external_directory": {
       "/home/tobias_k/.cache/R/renv/cache/v5/linux-debian-bookworm/R-4.5/x86_64-pc-linux-gnu/bslib/0.12.0/b2d0b0a17142ed4858f252d88eb56223/bslib/components/dist/*": "allow",
       "/home/tobias_k/.local/state/positron/logs/20261106T070104/exthost13/posit.assistant/tools/executeCode/*": "allow",
       "/home/tobias_k/.cache/oak/source/v1/cran/sass_0.4.10/R/*": "allow",
-      "/home/tobias_k/.cache/R/renv/cache/v5/linux-debian-bookworm/R-4.5/x86_64-pc-linux-gnu/leaflet/2.2.3/da8aa03b2885c2b934923e6a53fe592a/*": "allow"
+      "/home/tobias_k/.cache/R/renv/cache/v5/linux-debian-bookworm/R-4.5/x86_64-pc-linux-gnu/leaflet/2.2.3/da8aa03b2885c2b934923e6a53fe592a/*": "allow",
+      "/home/tobias_k/.local/state/positron/logs/20261108T084849/exthost2/posit.assistant/tools/executeCode/*": "allow",
+      "/home/tobias_k/.cache/R/renv/cache/v5/linux-debian-bookworm/R-4.5/x86_64-pc-linux-gnu/shiny/1.14.0/e71fb3fcf73db153eccd8afed293984f/shiny/www/shared/*": "allow"
     },
     "task": {
       "general": "allow"
@@ -79,7 +84,13 @@
     },
     "webfetch": {
       "https://www.brevo.com/*": "allow",
-      "https://help.brevo.com/*": "allow"
+      "https://help.brevo.com/*": "allow",
+      "https://www.gesetze-im-internet.de/*": "allow",
+      "https://eur-lex.europa.eu/*": "allow",
+      "https://www.die-medienanstalten.de/*": "allow",
+      "https://mailbox.org/*": "allow",
+      "https://www.scaleway.com/*": "allow",
+      "https://www.ionos.de/*": "allow"
     },
     "read": {
       "*.example": "allow"

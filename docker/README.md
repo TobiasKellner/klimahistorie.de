@@ -187,7 +187,30 @@ WebSocket-Unterstützung und passenden Timeouts. Bei mehreren App-Instanzen
 muss das Routing Shiny-Sitzungen berücksichtigen. Der direkte Start verwendet
 einen R-Prozess pro Container; rechenintensive Aufgaben können alle Sitzungen
 dieses Prozesses blockieren. Lastverteilung und Hintergrundaufgaben sind nicht
-Teil dieses Docker-Umbaus. E-Mail-Versand bleibt deaktiviert.
+Teil dieses Docker-Umbaus. E-Mail-Versand ist standardmäßig deaktiviert.
+
+### Optionaler IONOS-SMTP-Versand
+
+Die Variablen und Sicherheitsgrenzen sind in
+[shiny/README.md](../shiny/README.md#kontaktformular-ionos-smtp) beschrieben.
+`curl` ist bereits im Laufzeit-Lockfile enthalten. Nach Codeänderungen das
+App-Image neu bauen. Für den Versand die Werte aus `.env.example` in die lokale
+`.env` übernehmen und `CONTACT_SMTP_USERNAME` sowie `CONTACT_MAIL_TO` anpassen.
+Das Postfach-Passwort ausschließlich in die dort referenzierte Secret-Datei
+schreiben (eine Zeile, keine Anführungszeichen). Der App-Benutzer im Container
+muss die Datei lesen können; keine allgemeinen Leserechte vergeben.
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.smtp.yml up -d --build shiny-app
+```
+
+Das optionale Override aktiviert SMTP und mountet das Passwort unter
+`/run/secrets/contact_smtp_password`. Ohne dieses Override wird kein SMTP-Secret
+benötigt und die bestehenden Startbefehle bleiben gültig. Bei Verwendung weiterer
+Compose-Overrides das SMTP-Override zuletzt ergänzen. Ausgehender DNS-Zugriff
+und TCP zu `smtp.ionos.de:465` (alternativ `587`) müssen möglich sein.
+Nach Einrichtung eine einzelne Testnachricht über das Formular senden und die
+Zustellung einschließlich Weiterleitung sowie Antworten über `Reply-To` prüfen.
 
 ## Stand der Prüfung
 

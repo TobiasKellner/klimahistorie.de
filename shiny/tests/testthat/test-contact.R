@@ -73,6 +73,17 @@ testthat::test_that("clicking contact opens the modal, not on initialization", {
   })
 })
 
+testthat::test_that("email field has a single type supported by Shiny input bindings", {
+  html <- htmltools::renderTags(app_functions$message_modal_ui())$html
+  field <- regmatches(
+    html,
+    regexpr('<input[^>]*id="message_email"[^>]*>', html)
+  )
+  testthat::expect_match(field, 'type="email"', fixed = TRUE)
+  testthat::expect_match(field, 'autocomplete="email"', fixed = TRUE)
+  testthat::expect_false(grepl('type="text email"', field, fixed = TRUE))
+})
+
 testthat::test_that("message validation handles missing and malformed inputs", {
   validate <- app_functions$message_validation_errors
   testthat::expect_length(validate(NULL, NULL, NULL), 3L)
@@ -98,7 +109,12 @@ testthat::test_that("message validation handles missing and malformed inputs", {
 
 testthat::test_that("send validates without reporting a successful delivery", {
   server <- function(input, output, session) {
-    app_functions$contact_server(input, session, output = output)
+    app_functions$contact_server(
+      input,
+      session,
+      output = output,
+      config = function() NULL
+    )
   }
   shiny::testServer(server, {
     session$flushReact()
@@ -116,7 +132,7 @@ testthat::test_that("send validates without reporting a successful delivery", {
     )
     testthat::expect_match(
       output$message_status$html,
-      "nicht gesendet oder gespeichert",
+      "nicht gesendet",
       fixed = TRUE
     )
   })

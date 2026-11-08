@@ -195,6 +195,57 @@ Filterzustände und geben die benötigten Ergebnisse zurück. Neue fachliche
 Regeln einschließlich fehlender Werte zuerst definieren, dann implementieren.
 
 Die bisherige App liegt als Orientierungshilfe unter `shiny_old/`.
+
+## Kontaktformular: IONOS SMTP
+
+Der Versand nutzt `curl::send_mail()` mit festem Absender und Empfänger.
+Die Besucheradresse wird ausschließlich als `Reply-To` gesetzt. Betreff und
+Nachricht werden als UTF-8-MIME kodiert. Es gibt keine Marketing-Kontaktliste,
+kein Tracking und keine Speicherung der Nachricht durch die App. IONOS und
+das empfangende beziehungsweise weiterleitende Postfach verarbeiten die E-Mail
+dennoch; diese Verarbeitung muss in der Datenschutzerklärung berücksichtigt werden.
+
+Ohne ausdrückliche Aktivierung bleibt der Versand deaktiviert. Für die lokale
+App können folgende Werte in der nicht versionierten `shiny/.Renviron` stehen:
+
+```text
+CONTACT_SMTP_ENABLED=true
+CONTACT_SMTP_USERNAME=kontakt@example.org
+CONTACT_MAIL_TO=kontakt@example.org
+CONTACT_SMTP_PORT=465
+CONTACT_SMTP_PASSWORD_FILE=/absoluter/pfad/zum/secret/contact_smtp_password
+```
+
+| Variable | Bedeutung / Standard |
+| --- | --- |
+| `CONTACT_SMTP_ENABLED` | Nur `true` aktiviert den Versand; Standard `false`. |
+| `CONTACT_SMTP_USERNAME` | Vollständige Adresse des IONOS Mail-Basic-/Business-Postfachs; zugleich Absender. |
+| `CONTACT_MAIL_TO` | Feste Empfängeradresse; Standard ist `CONTACT_SMTP_USERNAME`. Eine Weiterleitung kann dort eingerichtet sein. |
+| `CONTACT_SMTP_PORT` | `465` mit TLS ab Verbindungsbeginn; alternativ `587` mit zwingendem STARTTLS. |
+| `CONTACT_SMTP_PASSWORD_FILE` | Pfad zu einer lesbaren Datei mit genau einer nichtleeren Zeile: dem Postfach-Passwort, nicht dem IONOS-Kundenpasswort. |
+
+Der Server ist fest `smtp.ionos.de`. TLS-Zertifikate werden geprüft; ein
+unverschlüsselter Fallback ist ausgeschlossen. Das Passwort nicht in Git,
+Chat, Docker-Image oder `.env` ablegen. Die Secret-Datei außerhalb des
+Repositories oder unter dem ignorierten Verzeichnis `secrets/` erstellen und
+nur für den App-Benutzer lesbar machen. Konfigurationsobjekte nicht ausgeben.
+
+Ein gültiger Versandversuch ist pro Shiny-Sitzung höchstens alle 60 Sekunden
+möglich, auch nach Fehlern oder erneutem Öffnen des Dialogs. Dies ist kein
+globaler Spamschutz: Neue Sitzungen umgehen diese Begrenzung. Bei öffentlichem
+Betrieb zusätzlich passende verbindungs-/sitzungsübergreifende Begrenzungen
+am Reverse-Proxy erwägen. Es werden keine Besucher-IP-Adressen dafür gespeichert.
+SMTP blockiert den R-Prozess synchron für maximal zehn Sekunden (Verbindungsaufbau
+maximal fünf Sekunden). Für höhere Last wäre ein Hintergrunddienst nötig.
+
+Die Erfolgsmeldung bestätigt nur die Übergabe an den Mailserver. Nach einem
+Timeout kann die E-Mail bereits angenommen worden sein; es gibt bewusst keine
+automatische Wiederholung, um doppelte Nachrichten zu vermeiden. Technische
+Versandfehler, Zugangsdaten und Nachrichtentexte werden nicht protokolliert oder
+an Besucher ausgegeben. Nach Konfigurationsänderungen die App neu starten.
+Die Unit-Tests verwenden ausschließlich einen simulierten SMTP-Transport.
+Eine reale Zustellprüfung erst nach Einrichtung der Zugangsdaten durchführen.
+
 Die Docker-Konfiguration verwendet `shiny/` und bindet damit diese modulare App ein.
 Das Produktionsimage startet die App ohne zusätzlichen Shiny Server und verwendet
 ein separates Laufzeit-Lockfile. Build- und Startbefehle sowie Hinweise zu

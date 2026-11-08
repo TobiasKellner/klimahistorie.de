@@ -80,12 +80,16 @@ message_modal_ui <- function() {
   shiny::modalDialog(
     title = "Nachricht",
     shiny::tags$p(
-      "Alle Felder sind Pflichtfelder. Der E-Mail-Versand ist noch nicht eingerichtet."
+      "Alle Felder sind Pflichtfelder. Ihre Angaben werden zur Bearbeitung ",
+      "der Anfrage per E-Mail an den Betreiber übermittelt."
     ),
     shiny::textInput("message_subject", "Betreff", width = "100%"),
     htmltools::tagQuery(
       shiny::textInput("message_email", "Ihre E-Mail-Adresse", width = "100%")
-    )$find("input")$addAttrs(type = "email", autocomplete = "email")$allTags(),
+    )$find("input")$removeAttrs("type")$addAttrs(
+      type = "email",
+      autocomplete = "email"
+    )$allTags(),
     shiny::textAreaInput(
       "message_text",
       "Ihre Nachricht",
@@ -120,7 +124,7 @@ message_validation_errors <- function(subject, email, text) {
   errors <- character()
   if (!nzchar(subject)) {
     errors <- c(errors, "Bitte geben Sie einen Betreff ein.")
-  } else if (nchar(subject) > 200L || grepl("[\r\n]", subject)) {
+  } else if (nchar(subject) > 200L || grepl("[[:cntrl:]]", subject)) {
     errors <- c(
       errors,
       "Der Betreff darf maximal 200 Zeichen enthalten und muss einzeilig sein."
@@ -129,8 +133,9 @@ message_validation_errors <- function(subject, email, text) {
   if (
     !nzchar(email) ||
       nchar(email) > 254L ||
+      grepl("[[:cntrl:]]", email) ||
       !grepl(
-        "^[^[:space:]@<>]+@[^[:space:]@<>.]+(\\.[^[:space:]@<>.]+)+$",
+        "^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)+$",
         email
       )
   ) {
@@ -148,9 +153,32 @@ contact_server <- function(
   input,
   session,
   show = shiny::showModal,
-  output = session$output
+  output = session$output,
+  send = contact_send_mail,
+  config = contact_smtp_config,
+  now = function() as.numeric(Sys.time()),
+  notify = shiny::showNotification
 ) {
   status <- shiny::reactiveVal(NULL)
+  last_attempt <- -Inf
+  shiny::observeEvent(
+    status(),
+    {
+      result <- status()
+      notify(
+        paste(result$text, collapse = " "),
+        type = switch(
+          result$class,
+          "alert-success" = "message",
+          "alert-danger" = "error",
+          "warning"
+        ),
+        duration = 10,
+        session = session
+      )
+    },
+    ignoreNULL = TRUE
+  )
   output$message_status <- shiny::renderUI({
     result <- status()
     if (is.null(result)) {
@@ -185,16 +213,48 @@ contact_server <- function(
         input$message_email,
         input$message_text
       )
-      status(
-        if (length(errors)) {
-          list(class = "alert-danger", text = errors)
-        } else {
+      if (length(errors)) {
+        status(list(class = "alert-danger", text = errors))
+        return()
+      }
+      if (now() - last_attempt < 60) {
+        status(list(
+          class = "alert-warning",
+          text = "Bitte warten Sie 60 Sekunden zwischen Versandversuchen."
+        ))
+        return()
+      }
+      last_attempt <<- now()
+      result <- tryCatch(
+        {
+          settings <- config()
+          if (is.null(settings)) {
+            list(
+              class = "alert-warning",
+              text = "Der E-Mail-Versand ist derzeit deaktiviert. Ihre Nachricht wurde nicht gesendet."
+            )
+          } else {
+            send(
+              trimws(input$message_subject),
+              trimws(input$message_email),
+              trimws(input$message_text),
+              config = settings
+            )
+            list(
+              class = "alert-success",
+              text = "Ihre Nachricht wurde an den Mailserver übergeben. Dies bestätigt noch nicht die endgültige Zustellung."
+            )
+          }
+        },
+        error = function(e) {
+          # Provider errors may contain addresses or credentials; do not expose them.
           list(
-            class = "alert-warning",
-            text = "Die Eingaben sind gültig. Der E-Mail-Versand ist noch nicht eingerichtet. Ihre Nachricht wurde nicht gesendet oder gespeichert."
+            class = "alert-danger",
+            text = "Der Versand konnte nicht bestätigt werden. Bitte versuchen Sie es später erneut."
           )
         }
       )
+      status(result)
     },
     ignoreInit = TRUE
   )

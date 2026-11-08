@@ -5,6 +5,8 @@ local({
     "shiny",
     "bslib",
     "htmltools",
+    "curl",
+    "jsonlite",
     "renv",
     "DBI",
     "RPostgres",
