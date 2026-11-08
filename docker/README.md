@@ -111,6 +111,183 @@ Für einen unabhängigen App-Test genügt der oben beschriebene `docker run`.
 
 ### PostgreSQL vorbereiten und starten
 
+Mit GNU Make, Bash, OpenSSL und Docker Compose v2 lässt sich die Einrichtung aus
+der Projektwurzel zusammenfassen:
+
+```bash
+make install
+```
+
+Dies erzeugt nur fehlende lokale PostgreSQL-Passwortdateien, startet PostgreSQL,
+wartet auf dessen Healthcheck, führt die Migrationen aus, setzt das ETL-Passwort
+und baut/startet ausschließlich die Shiny-App. Der Compose-Nginx wird nicht
+gestartet. Stations- und Tagesdaten werden nicht automatisch importiert; siehe
+[ETL-Anleitung](../etl/README.md). Der Host-Nginx und dessen TLS-Konfiguration
+müssen separat eingerichtet sein.
+
+Vorhandene Secret-Inhalte und Dateiberechtigungen werden nicht überschrieben.
+Wenn `.env` oder die Shell externe Pfade über `POSTGRES_ADMIN_PASSWORD_FILE`
+oder `POSTGRES_APP_PASSWORD_FILE` festlegt, müssen diese Dateien separat
+bereitgestellt werden: `make secrets` erstellt nur die drei Standarddateien
+unter `secrets/`, Compose nutzt weiterhin die konfigurierten externen Pfade.
+Neue Secrets ändern keine bestehenden Admin-/App-Rollenpasswörter.
+
+### Praktische Beispiele mit Make
+
+Alle folgenden Terminalbefehle werden auf dem Deployment-Server aus der
+Projektwurzel ausgeführt. `make` ohne Argument oder `make help` zeigt die Hilfe.
+Docker und die benötigten Hostprogramme werden durch das Makefile nicht installiert.
+
+#### Erstinstallation in einem Schritt
+
+```bash
+docker compose version
+make install
+make status
+make logs
+```
+
+Die Compose-Version muss `up --wait` unterstützen. Bei einem fehlgeschlagenen
+Schritt bricht `make install` ab. Nach Beheben der Ursache kann der Aufruf
+wiederholt werden; bestehende Secrets und unveränderte Migrationen bleiben erhalten.
+Die App wird dabei erneut gebaut und gestartet, das ETL-Passwort erneut gesetzt.
+Ein erfolgreicher Healthcheck ersetzt keinen Test der App im Browser.
+
+#### Einrichtung schrittweise prüfen
+
+```bash
+make secrets
+docker compose config --quiet
+make db-up
+make migrate
+make etl-password
+make deploy
+make status
+```
+
+Diese Variante erleichtert die Fehlersuche. `make migrate` und
+`make etl-password` starten die Datenbank nicht selbst. Für eine bereits laufende,
+eingerichtete Datenbank reicht bei reinen App-Änderungen `make deploy`.
+
+#### Codeupdate ohne neue Migrationen
+
+```bash
+git status --short
+```
+
+Lokale Änderungen vor dem Update prüfen und gegebenenfalls committen oder
+bewusst beiseitelegen; keine Dateien oder Secrets auf Verdacht verwerfen.
+Wenn der Arbeitsbaum für das Update bereit ist und der Branch einen Upstream hat:
+
+```bash
+git pull --ff-only && make deploy
+make status
+make logs
+```
+
+`git pull --ff-only` bricht bei auseinanderlaufender Branch-Historie ab,
+statt automatisch einen Merge zu erzeugen. Das Makefile holt keinen Git-Code selbst.
+
+#### Codeupdate mit neuen Migrationen
+
+```bash
+git pull --ff-only && make build && make migrate && make deploy
+make status
+make logs
+```
+
+Der erste Build prüft, ob das neue Image gebaut werden kann, bevor das Schema
+geändert wird. Der Build innerhalb von `make deploy` nutzt anschließend den Cache.
+Die laufende alte App bleibt während der Migration aktiv: Für inkompatible
+Schemaänderungen ein Wartungsfenster einplanen und die App vorher mit
+`docker compose stop shiny-app` stoppen. Bereits angewendete Migrationen nicht
+ändern oder umbenennen. Ein fehlgeschlagenes Deployment rollt Migrationen nicht zurück.
+
+`make deploy` baut das App-Image (bei unverändertem Code aus dem Build-Cache)
+und ersetzt nur den App-Container. PostgreSQL und sein Datenvolume bleiben
+unverändert. Bestehende Shiny-Sitzungen werden unterbrochen. `make help` zeigt
+alle Ziele. Installationsschritte laufen auch mit `make -j` in fester Reihenfolge;
+zusammengehörige Ziele nicht als separate parallele Aufrufe starten.
+Zum Beispiel `make db-up && make migrate`, nicht `make -j db-up migrate`.
+
+#### Fehler nach einem Deployment eingrenzen
+
+```bash
+make status
+make logs
+docker compose logs --tail=200 -f shiny-app
+```
+
+Den kontinuierlichen Logaufruf mit `Ctrl+C` beenden; dadurch wird der Container
+nicht gestoppt. Eine reine Neustartprüfung ohne Codeupdate ist möglich mit:
+
+```bash
+docker compose restart shiny-app
+```
+
+Dies verwendet das bisherige Image. Für neue Codeänderungen `make deploy` nutzen.
+Keine Passwörter oder vollständigen sensiblen Logs veröffentlichen.
+
+#### Datenbank neu aufbauen und Secrets behalten
+
+Ein ausdrücklich gewünschter vollständiger Datenbank-Reset ist separat möglich:
+
+```bash
+make db-reset CONFIRM=DELETE_KLIMAHISTORIE_DB
+make install
+```
+
+**Der Reset löscht alle Daten unwiderruflich.** Er prüft das am PostgreSQL-Container
+gemountete Volume und dessen Compose-Labels und entfernt nur `postgres_data`.
+Secrets und andere Volumes bleiben erhalten. Ohne eindeutigen vorhandenen
+Container bricht er ab. Für neue Passwörter müssen die gewünschten PostgreSQL-
+Secret-Dateien nach dem Reset und vor `make install` separat ersetzt werden;
+andere Secrets, etwa SMTP-Zugangsdaten, dürfen dabei nicht gelöscht werden.
+
+#### Datenbank neu aufbauen und neue lokale DB-Secrets erzeugen
+
+**Nur für einen bewusst gewünschten vollständigen Neuaufbau, nicht für ein
+normales Update oder einen bloßen Verbindungsfehler.** Bei externen Secret-Pfaden
+gilt dieses Beispiel nicht: Dort müssen die tatsächlich gemounteten Dateien
+separat verwaltet werden.
+
+```bash
+make db-reset CONFIRM=DELETE_KLIMAHISTORIE_DB &&
+rm -f -- secrets/postgres_admin_password \
+         secrets/postgres_app_password \
+         secrets/postgres_etl_password &&
+make install
+```
+
+Nur diese drei Dateien werden ersetzt; das Verzeichnis `secrets/` niemals
+vollständig löschen. `make install` erzeugt neue Zufallspasswörter und die leere
+Datenbank übernimmt sie beim Initialisieren. Danach die Daten erneut importieren.
+
+#### Nach der Einrichtung Daten importieren und die App lokal testen
+
+Die Imports laufen separat in R und benötigen `climate_etl` mit der
+Datei `secrets/postgres_etl_password`. Zuerst den Stationsindex laden, danach
+einen begrenzten Tagesdatenimport prüfen und gegebenenfalls den vollständigen
+Import starten. Die ausführbaren R-Beispiele stehen in der
+[ETL-Anleitung](../etl/README.md).
+
+Für den lokalen App-Start auf demselben Server verwendet `shiny/.Renviron`
+hingegen `climate_reader` mit dem absoluten Hostpfad zur
+`secrets/postgres_app_password`. Nicht den Containerpfad `/run/secrets/...`
+eintragen. Die Unterschiede sind:
+
+| Verwendung | Host | Port | Benutzer | Passwortdatei |
+|---|---|---|---|---|
+| Shiny im Compose-Container | `postgres` | `5432` | `climate_reader` | `/run/secrets/postgres_app_password` |
+| Shiny lokal auf dem Docker-Host | `127.0.0.1` | `5433` | `climate_reader` | Absoluter Hostpfad zum App-Secret |
+| ETL lokal auf dem Docker-Host | `127.0.0.1` | `5433` | `climate_etl` | Absoluter Hostpfad zum ETL-Secret |
+
+Separate R-Konsolen für App und ETL verwenden: Die lokale App liest
+`shiny/.Renviron` und überschreibt die Datenbankeinstellungen ihrer Sitzung.
+Ein erfolgreicher ETL-Login bestätigt nicht automatisch den App-Login.
+
+### Alternative: Erstinstallation ohne Make
+
 Vor dem ersten Start drei unterschiedliche Passwortdateien anlegen, beispielsweise
 auf dem Deployment-Server aus der Projektwurzel:
 
