@@ -100,11 +100,12 @@ message_modal_ui <- function() {
     easyClose = FALSE,
     footer = shiny::tagList(
       shiny::modalButton("Abbrechen", icon = shiny::icon("xmark")),
-      shiny::actionButton(
+      bslib::input_task_button(
         "send_message",
         "Nachricht senden",
         icon = shiny::icon("paper-plane"),
-        class = "btn-primary"
+        label_busy = "Wird gesendet …",
+        type = "primary"
       )
     )
   )

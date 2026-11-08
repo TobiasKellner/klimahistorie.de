@@ -73,6 +73,17 @@ testthat::test_that("clicking contact opens the modal, not on initialization", {
   })
 })
 
+testthat::test_that("the send button includes an automatically resetting loading state", {
+  html <- htmltools::renderTags(app_functions$message_modal_ui())$html
+  testthat::expect_match(html, 'id="send_message"', fixed = TRUE)
+  testthat::expect_match(html, "bslib-task-button", fixed = TRUE)
+  testthat::expect_match(html, "Nachricht senden", fixed = TRUE)
+  testthat::expect_match(html, "Wird gesendet …", fixed = TRUE)
+  testthat::expect_match(html, 'slot="busy"', fixed = TRUE)
+  testthat::expect_match(html, "fa-spin", fixed = TRUE)
+  testthat::expect_match(html, 'auto-reset', fixed = TRUE)
+})
+
 testthat::test_that("email field has a single type supported by Shiny input bindings", {
   html <- htmltools::renderTags(app_functions$message_modal_ui())$html
   field <- regmatches(
