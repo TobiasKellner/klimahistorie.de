@@ -24,6 +24,7 @@ local({
       envir = app_env
     )
   }
+  app_env$app_require_utf8()
   database <- app_env$database_lifecycle()
   shiny::shinyApp(
     ui = app_env$app_ui(app_dir),

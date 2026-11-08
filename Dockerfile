@@ -16,7 +16,10 @@ COPY docker/renv.lock docker/restore.R ./
 RUN Rscript --vanilla restore.R
 
 FROM ${R_IMAGE} AS runtime
-ENV TZ=Europe/Berlin
+# Plotly's JSON serialization needs a UTF-8 process locale for hover labels.
+ENV TZ=Europe/Berlin \
+    LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8
 RUN sed -i 's|http://|https://|g' /etc/apt/sources.list.d/ubuntu.sources \
     && apt-get -o Acquire::Retries=1 -o Acquire::https::Timeout=20 \
         -o APT::Update::Error-Mode=any update \
