@@ -67,6 +67,36 @@ local({
   recent$TMK <- 7.5
   merged <- merge_daily_data(historical, recent)
   stopifnot(nrow(merged) == 1L, merged$TMK == 7.5)
+  calls <- character()
+  download <- function(station_id, period, cache_dir) {
+    stopifnot(station_id == 1L, identical(cache_dir, "unused-cache"))
+    calls <<- c(calls, period)
+    switch(period, historical = historical, recent = recent)
+  }
+  for (period in c("both", "recent", "historical")) {
+    calls <- character()
+    data <- load_daily_station_data(
+      1L,
+      "unused-cache",
+      period = period,
+      download = download
+    )
+    expected <- if (period == "both") c("historical", "recent") else period
+    stopifnot(
+      identical(calls, expected),
+      identical(data, if (period == "historical") historical else recent)
+    )
+  }
+  calls <- character()
+  stopifnot(
+    identical(
+      load_daily_station_data(1L, "unused-cache", download = download),
+      merged
+    ),
+    identical(calls, c("historical", "recent")),
+    fails(import_daily_data(period = "invalid")),
+    fails(load_daily_station_data(1L, "unused-cache", period = "invalid"))
+  )
   stopifnot(fails(validate_daily_data(rbind(historical, historical))))
   invalid <- historical
   invalid$MESS_DATUM <- "20260230"
@@ -77,4 +107,13 @@ local({
     nrow(merge_daily_data(historical, empty)) == 1L,
     nrow(merge_daily_data(empty, recent)) == 1L
   )
+  stopifnot(identical(
+    load_daily_station_data(
+      1L,
+      "unused-cache",
+      period = "recent",
+      download = function(...) empty
+    ),
+    empty
+  ))
 })

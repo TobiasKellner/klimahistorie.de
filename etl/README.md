@@ -69,6 +69,40 @@ gezählt. Ist das Limit größer als die Auswahl, werden alle verfügbaren Stati
 Fortschrittsmeldungen beziehen sich auf die begrenzte Auswahl und lassen sich mit
 `progress = FALSE` abschalten.
 
+### Aktuelle, historische oder beide Archive auswählen
+
+Mit `period` lässt sich die Herkunft auswählen. Standard ist `"both"`, sodass
+bisherige Aufrufe weiterhin historische und aktuelle Archive verarbeiten:
+
+```r
+source("etl/db_connection.R")
+source("etl/daily_data.R")
+
+# Regelmäßige Aktualisierung: nur die aktuellen DWD-Archive.
+import_daily_data(period = "recent")
+
+# Historischer Bestand: nur historische Archive.
+import_daily_data(period = "historical")
+
+# Vollständiger Import beider Archivarten (auch der Standard ohne period).
+import_daily_data(period = "both")
+
+# Begrenzter Testlauf für aktuelle Daten.
+import_daily_data(period = "recent", n_stations = 5)
+```
+
+Diese Aufrufe sind Alternativen, keine notwendige Abfolge. Nicht ausgewählte
+Archivarten werden weder geladen noch aus dem Cache gelesen. `"recent"` bedeutet
+alle Zeilen der aktuellen DWD-Archive, nicht nur Tage seit dem letzten Import.
+Die Stationsauswahl bleibt in allen Modi gleich; für stillgelegte Stationen
+gegebenenfalls `station_ids` ausdrücklich angeben.
+
+Die Auswahl löscht keine bereits gespeicherten Daten. **Auch ein rein historischer
+Import aktualisiert vorhandene Zeilen mit gleichem Stations-/Datumsschlüssel**
+und kann damit Werte aus einem früheren aktuellen Import überschreiben.
+Der Vorrang aktueller Daten gilt beim Zusammenführen innerhalb eines
+`period = "both"`-Laufs, nicht als dauerhafte Datenbankregel.
+
 `source("etl/Import_climate_data.R")` startet den vollständigen Import für die bisherige
 Stationsauswahl: Tages-Klimastationen mit verfügbaren Dateien und einem Enddatum
 innerhalb der letzten zwei Jahre. Je Station werden alle verfügbaren historischen

@@ -146,6 +146,32 @@ download_daily_period <- function(station_id, period, cache_dir) {
   data
 }
 
+load_daily_station_data <- function(
+  station_id,
+  cache_dir,
+  period = c("both", "recent", "historical"),
+  report = function(phase) invisible(NULL),
+  download = download_daily_period
+) {
+  period <- match.arg(period)
+  if (period %in% c("both", "historical")) {
+    report("historische Daten laden")
+    historical <- download(station_id, "historical", cache_dir)
+  }
+  if (period %in% c("both", "recent")) {
+    report("aktuelle Daten laden")
+    recent <- download(station_id, "recent", cache_dir)
+  }
+  data <- switch(
+    period,
+    both = merge_daily_data(historical, recent),
+    historical = historical,
+    recent = recent
+  )
+  validate_daily_data(data)
+  data
+}
+
 limit_daily_station_ids <- function(station_ids, n_stations = NULL) {
   if (
     !is.null(n_stations) &&
@@ -168,8 +194,10 @@ import_daily_data <- function(
   cache_dir = "DWDdata",
   station_ids = NULL,
   progress = TRUE,
-  n_stations = NULL
+  n_stations = NULL,
+  period = c("both", "recent", "historical")
 ) {
+  period <- match.arg(period)
   if (!is.logical(progress) || length(progress) != 1L || is.na(progress)) {
     stop("progress muss TRUE oder FALSE sein.", call. = FALSE)
   }
@@ -227,11 +255,7 @@ import_daily_data <- function(
         ))
       }
     }
-    report("historische Daten laden")
-    historical <- download_daily_period(station_id, "historical", cache_dir)
-    report("aktuelle Daten laden")
-    recent <- download_daily_period(station_id, "recent", cache_dir)
-    data <- merge_daily_data(historical, recent)
+    data <- load_daily_station_data(station_id, cache_dir, period, report)
     if (!nrow(data)) {
       stop("Keine Tagesdaten für die ausgewählte Station.", call. = FALSE)
     }
