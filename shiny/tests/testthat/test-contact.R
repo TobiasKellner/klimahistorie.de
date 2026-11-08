@@ -25,6 +25,8 @@ testthat::test_that("the contact modal includes advertising images without a mai
   testthat::expect_match(html, "fa-xmark", fixed = TRUE)
   testthat::expect_match(html, 'id="show_message"', fixed = TRUE)
   testthat::expect_match(html, "fa-envelope", fixed = TRUE)
+  testthat::expect_match(html, 'col-widths-xs="12"', fixed = TRUE)
+  testthat::expect_match(html, 'col-widths-sm="6"', fixed = TRUE)
   testthat::expect_length(
     regmatches(html, gregexpr("<details>", html))[[1]],
     4L

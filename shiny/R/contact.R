@@ -21,7 +21,7 @@ contact_modal_ui <- function() {
           "Gerne unterstütze ich Sie bei Problemen und Herausforderungen in folgenden Bereichen:"
         )),
         bslib::layout_columns(
-          col_widths = c(6, 6, 6, 6),
+          col_widths = bslib::breakpoints(xs = 12, sm = 6),
           fill = FALSE,
           contact_card_ui(
             "Datenanalyse, Visualisierung & statistische Berechnungen",

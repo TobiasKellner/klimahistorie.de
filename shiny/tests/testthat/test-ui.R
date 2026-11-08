@@ -10,6 +10,7 @@ testthat::test_that("module inputs and native collapse controls are namespaced",
       fixed = TRUE
     )
     testthat::expect_match(html, 'data-open-desktop="open"', fixed = TRUE)
+    testthat::expect_match(html, 'data-open-mobile="closed"', fixed = TRUE)
   }
 })
 

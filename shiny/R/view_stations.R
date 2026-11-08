@@ -80,7 +80,8 @@ view_stations_ui <- function(id = "stations") {
     bslib::card_header("Aktive Stationen"),
     bslib::card_body(
       leaflet::leafletOutput(ns("map"), height = "100%"),
-      min_height = "600px"
+      min_height = "600px",
+      class = "stations-map-body"
     )
   )
 }

@@ -18,7 +18,7 @@ filter_card_ui <- function(
     bslib::layout_sidebar(
       sidebar = bslib::sidebar(
         id = sidebar_id,
-        open = "open",
+        open = "desktop",
         bg = "#F8F9FA",
         controls
       ),
