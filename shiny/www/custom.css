@@ -129,25 +129,25 @@
 
 /* Enlarge only the contact success notification, keeping it inside small screens. */
 #shiny-notification-panel:has(#shiny-notification-contact-message-success) {
-  width: min(420px, calc(100vw - 20px));
+  width: min(500px, calc(100vw - 20px));
 }
 
 #shiny-notification-contact-message-success {
-  padding: 1rem;
+  padding: 1.25rem;
 }
 
 .contact-success-notification {
   display: flex;
   align-items: flex-start;
-  gap: 0.85rem;
-  font-size: 1.1rem;
+  gap: 1rem;
+  font-size: 1.25rem;
   line-height: 1.5;
   text-align: left;
 }
 
 .contact-success-notification-icon {
   flex: 0 0 auto;
-  font-size: 1.8rem;
+  font-size: 2.2rem;
   line-height: 1;
   padding-top: 0.15rem;
 }
