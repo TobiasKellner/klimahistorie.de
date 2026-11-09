@@ -127,6 +127,39 @@
 
 .contact-advertising details p { margin: 0.35rem 0 0; }
 
+/* Enlarge only the contact success notification, keeping it inside small screens. */
+#shiny-notification-panel:has(#shiny-notification-contact-message-success) {
+  width: min(420px, calc(100vw - 20px));
+}
+
+#shiny-notification-contact-message-success {
+  padding: 1rem;
+}
+
+.contact-success-notification {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  font-size: 1.1rem;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.contact-success-notification-icon {
+  flex: 0 0 auto;
+  font-size: 1.8rem;
+  line-height: 1;
+  padding-top: 0.15rem;
+}
+
+.contact-success-notification-icon .fa { margin-right: 0; }
+
+.contact-success-notification-text {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 .climate-overview { display: grid; gap: 1.25rem; }
 
 .overview-hero {

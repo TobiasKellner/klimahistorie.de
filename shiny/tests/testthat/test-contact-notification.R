@@ -11,8 +11,8 @@ testthat::test_that("successful sending closes the modal and shows an icon notif
       close = function(session) {
         closed <<- closed + 1L
       },
-      notify = function(ui, type, ...) {
-        notices[[length(notices) + 1L]] <<- list(ui = ui, type = type)
+      notify = function(ui, type, id = NULL, ...) {
+        notices[[length(notices) + 1L]] <<- list(ui = ui, type = type, id = id)
       }
     )
   }
@@ -30,9 +30,20 @@ testthat::test_that("successful sending closes the modal and shows an icon notif
     testthat::expect_equal(closed, 1L)
     testthat::expect_length(notices, 1L)
     testthat::expect_identical(notices[[1]]$type, "message")
+    testthat::expect_identical(notices[[1]]$id, "contact-message-success")
     html <- htmltools::renderTags(notices[[1]]$ui)$html
     testthat::expect_match(html, "erfolgreich versendet", fixed = TRUE)
     testthat::expect_match(html, "fa-circle-check", fixed = TRUE)
+    testthat::expect_match(
+      html,
+      'class="contact-success-notification-icon"',
+      fixed = TRUE
+    )
+    testthat::expect_match(
+      html,
+      'class="contact-success-notification-text"',
+      fixed = TRUE
+    )
     testthat::expect_null(output$message_status)
   })
 })

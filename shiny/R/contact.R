@@ -290,10 +290,19 @@ contact_server <- function(
         status(NULL)
         close(session = session)
         notify(
-          shiny::tagList(
-            shiny::icon("circle-check"),
-            result$text
+          shiny::tags$div(
+            class = "contact-success-notification",
+            shiny::tags$span(
+              class = "contact-success-notification-icon",
+              `aria-hidden` = "true",
+              shiny::icon("circle-check")
+            ),
+            shiny::tags$span(
+              class = "contact-success-notification-text",
+              result$text
+            )
           ),
+          id = "contact-message-success",
           type = "message",
           duration = 10,
           session = session
