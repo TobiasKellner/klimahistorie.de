@@ -47,7 +47,8 @@
       "curl *": "allow",
       "docker compose logs *": "allow",
       "xargs *": "allow",
-      "docker compose -f docker-compose.yml *": "allow"
+      "docker compose -f docker-compose.yml *": "allow",
+      "git restore *": "allow"
     },
     "executeCode": {
       "*": "allow"

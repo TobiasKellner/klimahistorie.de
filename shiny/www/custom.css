@@ -55,6 +55,8 @@
   object-fit: contain;
 }
 
+.contact-image-cover { object-fit: cover; }
+
 .contact-modal .modal-content {
   max-height: calc(100dvh - 3.5rem);
 }
@@ -75,11 +77,51 @@
 
 .contact-advertising { font-size: 0.85rem; }
 
-.contact-advertising .bslib-grid { gap: 0.75rem; }
+.contact-advertising .bslib-grid {
+  gap: 0.75rem;
+  align-items: start;
+}
 
 .contact-advertising .card { gap: 0; }
 
 .contact-advertising .card-body { padding: 0.65rem; }
+
+.contact-advertising .contact-card-overlay {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  aspect-ratio: var(--contact-image-ratio, 3 / 2);
+}
+
+.contact-advertising .contact-card-overlay .contact-card-image-layer {
+  position: absolute;
+  inset: 0;
+  margin: 0 !important;
+  padding: 0;
+  z-index: 0;
+  background: none;
+}
+
+.contact-card-overlay .contact-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  flex: none;
+  object-fit: cover;
+  object-position: center;
+  border-radius: inherit;
+}
+
+.contact-advertising .contact-card-overlay .card-body:not(.contact-card-image-layer) {
+  position: relative;
+  z-index: 1;
+  justify-content: flex-end;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 95%), 0 2px 5px rgb(0 0 0 / 85%);
+  background: linear-gradient(to bottom, rgb(0 0 0 / 0%), rgb(0 0 0 / 30%));
+}
 
 .contact-advertising h3 { font-size: 0.95rem; }
 
@@ -166,5 +208,6 @@
   .modal-body { overflow-y: auto; }
   .contact-modal .modal-content { max-height: calc(100dvh - 1rem); }
   .contact-image { height: 90px; }
+  .contact-card-overlay .contact-image { height: 100%; }
 }
 

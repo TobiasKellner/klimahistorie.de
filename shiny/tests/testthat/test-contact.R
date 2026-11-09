@@ -12,16 +12,39 @@ testthat::test_that("the sidebar contains a contact action button", {
 testthat::test_that("the contact modal includes advertising images without a mailto link", {
   html <- htmltools::renderTags(app_functions$contact_modal_ui())$html
   for (image in c(
-    "image_graphics.jpg",
-    "image_reporting.jpg",
-    "image_automatization.jpg",
-    "image_consulting.jpg"
+    "image_data_analysis.png",
+    "image_reporting.png",
+    "image_automatization.png",
+    "image_consulting.png"
   )) {
     testthat::expect_match(html, image, fixed = TRUE)
     testthat::expect_true(file.exists(file.path(app_dir, "www", image)))
   }
   testthat::expect_false(grepl("mailto:", html, fixed = TRUE))
+  testthat::expect_match(
+    html,
+    'src="image_data_analysis.png" alt="Datenanalyse, Visualisierung &amp; statistische Berechnungen" class="contact-image contact-image-cover"',
+    fixed = TRUE
+  )
   testthat::expect_match(html, "Abbrechen", fixed = TRUE)
+  testthat::expect_match(html, "contact-card-image-layer", fixed = TRUE)
+  for (ratio in c("1672 / 941", "3 / 2")) {
+    testthat::expect_length(
+      regmatches(
+        html,
+        gregexpr(
+          paste0("--contact-image-ratio: ", ratio, ";"),
+          html,
+          fixed = TRUE
+        )
+      )[[1]],
+      2L
+    )
+  }
+  testthat::expect_length(
+    regmatches(html, gregexpr("contact-card-overlay", html, fixed = TRUE))[[1]],
+    4L
+  )
   testthat::expect_match(html, "fa-xmark", fixed = TRUE)
   testthat::expect_match(html, 'id="show_message"', fixed = TRUE)
   testthat::expect_match(html, "fa-envelope", fixed = TRUE)

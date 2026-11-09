@@ -1,13 +1,33 @@
-contact_card_ui <- function(title, image, example) {
-  bslib::card(
-    shiny::tags$img(src = image, alt = title, class = "contact-image"),
-    bslib::card_body(
-      shiny::tags$h3(title, class = "h5"),
-      shiny::tags$details(
-        shiny::tags$summary("Fallbeispiel"),
-        shiny::tags$p(example)
+contact_card_ui <- function(
+  title,
+  image,
+  example,
+  image_class = "contact-image",
+  overlay = FALSE,
+  image_ratio = "3 / 2"
+) {
+  image_tag <- shiny::tags$img(src = image, alt = title, class = image_class)
+  htmltools::tagAppendAttributes(
+    bslib::card(
+      if (overlay) {
+        bslib::card_body(image_tag, class = "contact-card-image-layer")
+      } else {
+        image_tag
+      },
+      bslib::card_body(
+        shiny::tags$h3(title, class = "h5"),
+        shiny::tags$details(
+          shiny::tags$summary("Fallbeispiel"),
+          shiny::tags$p(example)
+        )
       )
-    )
+    ),
+    class = if (overlay) "contact-card-overlay" else NULL,
+    style = if (overlay) {
+      paste0("--contact-image-ratio: ", image_ratio, ";")
+    } else {
+      NULL
+    }
   )
 }
 
@@ -25,38 +45,48 @@ contact_modal_ui <- function() {
           fill = FALSE,
           contact_card_ui(
             "Datenanalyse, Visualisierung & statistische Berechnungen",
-            "image_graphics.jpg",
+            "image_data_analysis.png",
             paste0(
               "Sie möchten den Umsatz Ihres Unternehmens über die letzten Jahre, ",
               "inklusive der Untergliederung in verschiedene Geschäftsbereiche, ",
               "visualisieren, um Wachstumsraten und saisonale Schwankungen darzustellen."
-            )
+            ),
+            image_class = "contact-image contact-image-cover",
+            overlay = TRUE,
+            image_ratio = "1672 / 941"
           ),
           contact_card_ui(
             "Berichte & Reportings (Web-Anwendungen, Dashboards, PDF, Word, HTML)",
-            "image_reporting.jpg",
+            "image_reporting.png",
             paste0(
               "Sie möchten Analysen von Verkaufszahlen, Marktsegmenten sowie Kundenverhalten erstellen ",
               "und diese Daten in einem interaktiven Dashboard zusammenführen, ",
               "um Trends zu identifizieren und Chancen zu erkennen."
-            )
+            ),
+            image_class = "contact-image contact-image-cover",
+            overlay = TRUE
           ),
           contact_card_ui(
             "Automatisierung von Datenprozessen & skalierbare Datenoperationen",
-            "image_automatization.jpg",
+            "image_automatization.png",
             paste0(
               "Sie möchten eine große Anzahl an ",
               "Dokumenten, bspw. Rechnungen oder Berichte im PDF-Format, ",
               "jeden Monat automatisiert erstellen und an Kunden per E-Mail schicken."
-            )
+            ),
+            image_class = "contact-image contact-image-cover",
+            overlay = TRUE,
+            image_ratio = "1672 / 941"
           ),
           contact_card_ui(
             "Beratung bei komplexen Datenprojekten & Unterstützung bei datenbasierten Entscheidungsprozessen",
-            "image_consulting.jpg",
+            "image_consulting.png",
             paste0(
               "Sie möchten Daten aus verschiedenen Quellen verbinden und durch die Zusammenführung in einer Web-App ",
               "Prozesse digitalisieren und Arbeitsaufwand senken."
-            )
+            ),
+            image_class = "contact-image contact-image-cover",
+            overlay = TRUE
           )
         )
       ),
