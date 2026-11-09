@@ -188,7 +188,8 @@ contact_server <- function(
   send = contact_send_mail,
   config = contact_smtp_config,
   now = function() as.numeric(Sys.time()),
-  notify = shiny::showNotification
+  notify = shiny::showNotification,
+  close = shiny::removeModal
 ) {
   status <- shiny::reactiveVal(NULL)
   last_attempt <- -Inf
@@ -273,7 +274,7 @@ contact_server <- function(
             )
             list(
               class = "alert-success",
-              text = "Ihre Nachricht wurde an den Mailserver übergeben. Dies bestätigt noch nicht die endgültige Zustellung."
+              text = "Ihre Nachricht wurde erfolgreich versendet."
             )
           }
         },
@@ -285,7 +286,21 @@ contact_server <- function(
           )
         }
       )
-      status(result)
+      if (identical(result$class, "alert-success")) {
+        status(NULL)
+        close(session = session)
+        notify(
+          shiny::tagList(
+            shiny::icon("circle-check"),
+            result$text
+          ),
+          type = "message",
+          duration = 10,
+          session = session
+        )
+      } else {
+        status(result)
+      }
     },
     ignoreInit = TRUE
   )

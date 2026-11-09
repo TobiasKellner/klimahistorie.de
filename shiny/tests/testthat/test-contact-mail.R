@@ -122,11 +122,7 @@ testthat::test_that("valid submissions send once, remain throttled across dialog
       unname(calls[[1]][1:3]),
       list("Frage", "person@example.net", "Text")
     )
-    testthat::expect_match(
-      output$message_status$html,
-      "Mailserver übergeben",
-      fixed = TRUE
-    )
+    testthat::expect_null(output$message_status)
     session$setInputs(show_message = 1, send_message = 3)
     testthat::expect_length(calls, 1)
     testthat::expect_match(
