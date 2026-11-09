@@ -22,8 +22,14 @@ services:
       PGDATABASE: klimahistorie
       PGUSER: climate_reader
       DB_PASSWORD_FILE: /run/secrets/postgres_app_password
+      CONTACT_SMTP_ENABLED: ${CONTACT_SMTP_ENABLED:-true}
+      CONTACT_SMTP_USERNAME: ${CONTACT_SMTP_USERNAME:-info@klimahistorie.de}
+      CONTACT_MAIL_TO: ${CONTACT_MAIL_TO:-${CONTACT_SMTP_USERNAME:-info@klimahistorie.de}}
+      CONTACT_SMTP_PORT: ${CONTACT_SMTP_PORT:-465}
+      CONTACT_SMTP_PASSWORD_FILE: /run/secrets/contact_smtp_password
     secrets:
       - postgres_app_password
+      - contact_smtp_password
     depends_on:
       postgres:
         condition: service_healthy
@@ -94,5 +100,7 @@ secrets:
     file: ${POSTGRES_APP_PASSWORD_FILE:-./secrets/postgres_app_password}
   postgres_etl_password:
     file: ./secrets/postgres_etl_password
+  contact_smtp_password:
+    file: ${CONTACT_SMTP_PASSWORD_FILE:-./secrets/contact_smtp_password}
 
 

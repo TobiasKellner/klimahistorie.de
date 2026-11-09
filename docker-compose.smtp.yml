@@ -2,8 +2,8 @@ services:
   shiny-app:
     environment:
       CONTACT_SMTP_ENABLED: "true"
-      CONTACT_SMTP_USERNAME: ${CONTACT_SMTP_USERNAME:?Set CONTACT_SMTP_USERNAME}
-      CONTACT_MAIL_TO: ${CONTACT_MAIL_TO:-${CONTACT_SMTP_USERNAME}}
+      CONTACT_SMTP_USERNAME: ${CONTACT_SMTP_USERNAME:-info@klimahistorie.de}
+      CONTACT_MAIL_TO: ${CONTACT_MAIL_TO:-${CONTACT_SMTP_USERNAME:-info@klimahistorie.de}}
       CONTACT_SMTP_PORT: ${CONTACT_SMTP_PORT:-465}
       CONTACT_SMTP_PASSWORD_FILE: /run/secrets/contact_smtp_password
     secrets:

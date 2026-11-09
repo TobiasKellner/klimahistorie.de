@@ -118,6 +118,10 @@ der Projektwurzel zusammenfassen:
 make install
 ```
 
+Vor `make install` das gültige IONOS-Postfachpasswort als SMTP-Secret bereitstellen;
+siehe [IONOS-SMTP-Versand](#ionos-smtp-versand). Das Makefile erzeugt dieses
+Passwort nicht: Ein zufälliges Passwort würde vom Mailanbieter abgelehnt.
+
 Dies erzeugt nur fehlende lokale PostgreSQL-Passwortdateien, startet PostgreSQL,
 wartet auf dessen Healthcheck, führt die Migrationen aus, setzt das ETL-Passwort
 und baut/startet ausschließlich die Shiny-App. Der Compose-Nginx wird nicht
@@ -364,30 +368,60 @@ WebSocket-Unterstützung und passenden Timeouts. Bei mehreren App-Instanzen
 muss das Routing Shiny-Sitzungen berücksichtigen. Der direkte Start verwendet
 einen R-Prozess pro Container; rechenintensive Aufgaben können alle Sitzungen
 dieses Prozesses blockieren. Lastverteilung und Hintergrundaufgaben sind nicht
-Teil dieses Docker-Umbaus. E-Mail-Versand ist standardmäßig deaktiviert.
+Teil dieses Docker-Umbaus. In der Basis-Compose-Konfiguration ist der
+E-Mail-Versand aktiviert; beim lokalen R-Start bleibt er ohne entsprechende
+SMTP-Umgebungsvariablen deaktiviert.
 
-### Optionaler IONOS-SMTP-Versand
+### IONOS-SMTP-Versand
 
 Die Variablen und Sicherheitsgrenzen sind in
 [shiny/README.md](../shiny/README.md#kontaktformular-ionos-smtp) beschrieben.
-`curl` ist bereits im Laufzeit-Lockfile enthalten. Nach Codeänderungen das
-App-Image neu bauen. Für den Versand die Werte aus `.env.example` in die lokale
-`.env` übernehmen und `CONTACT_SMTP_USERNAME` sowie `CONTACT_MAIL_TO` anpassen.
-Das Postfach-Passwort ausschließlich in die dort referenzierte Secret-Datei
-schreiben (eine Zeile, keine Anführungszeichen). Der App-Benutzer im Container
-muss die Datei lesen können; keine allgemeinen Leserechte vergeben.
+`curl` ist bereits im Laufzeit-Lockfile enthalten. Die Basisdatei
+`docker-compose.yml` aktiviert den Versand mit `info@klimahistorie.de` als
+Absender und Empfänger über `smtp.ionos.de:465`. `make install` und `make deploy`
+übernehmen diese Konfiguration automatisch; ein SMTP-Override ist nicht nötig.
+
+Das gültige IONOS-Postfachpasswort ausschließlich in
+`secrets/contact_smtp_password` speichern: genau eine nichtleere Zeile, ohne
+zusätzliche Anführungszeichen oder `PASSWORD=`. Die Datei nicht in Git aufnehmen,
+nicht ausgeben und nicht durch ein zufällig erzeugtes Passwort ersetzen.
+Eine vorhandene Datei nicht ohne bewusste Passwortänderung überschreiben.
+
+Auf dem Deployment-Server aus der Projektwurzel die Datei in einem Editor
+anlegen bzw. bearbeiten und anschließend deren Rechte setzen:
 
 ```bash
-docker compose -f docker-compose.yml -f docker-compose.smtp.yml up -d --build shiny-app
+mkdir -p secrets
+chmod 700 secrets
+# Die Datei vorher im Editor mit dem gültigen Postfachpasswort speichern.
+sudo chown 10001:10001 secrets/contact_smtp_password
+sudo chmod 400 secrets/contact_smtp_password
+docker compose config --quiet
+make deploy
+make status
+make logs
 ```
 
-Das optionale Override aktiviert SMTP und mountet das Passwort unter
-`/run/secrets/contact_smtp_password`. Ohne dieses Override wird kein SMTP-Secret
-benötigt und die bestehenden Startbefehle bleiben gültig. Bei Verwendung weiterer
-Compose-Overrides das SMTP-Override zuletzt ergänzen. Ausgehender DNS-Zugriff
-und TCP zu `smtp.ionos.de:465` (alternativ `587`) müssen möglich sein.
-Nach Einrichtung eine einzelne Testnachricht über das Formular senden und die
-Zustellung einschließlich Weiterleitung sowie Antworten über `Reply-To` prüfen.
+UID/GID `10001:10001` ist der App-Benutzer im Container. Modus `400` erlaubt nur
+ihm das Lesen; das private Verzeichnis verhindert Zugriff anderer Host-Benutzer.
+Bei Rootless Docker oder User-Namespace-Remapping muss die Host-UID entsprechend
+angepasst werden. File-backed Compose-Secrets werden schreibgeschützt gemountet;
+`uid`/`mode` in Compose ersetzen bei diesen Bind-Mounts nicht die Host-Dateirechte.
+
+Die App liest das Secret unter `/run/secrets/contact_smtp_password`. Ein anderer
+Host-Dateipfad kann mit `CONTACT_SMTP_PASSWORD_FILE` in `.env` eingestellt werden.
+Die übrigen optionalen Einstellungen stehen in `.env.example`; dort gehören
+keine Passwortwerte hinein. Bereits gesetzte Werte in `.env` oder der Shell
+überschreiben die Compose-Defaults und müssen gegebenenfalls angepasst werden.
+Das vorhandene `docker-compose.smtp.yml` bleibt als kompatibles Override erhalten.
+
+Mit `CONTACT_SMTP_ENABLED=false` in `.env` kann der Versand deaktiviert werden.
+Der konfigurierte Secret-Mount bleibt dabei erforderlich; für ein Deployment ohne
+SMTP-Datei muss auch dieser Mount durch eine separate Compose-Anpassung entfallen.
+Ausgehender DNS-Zugriff und TCP zu `smtp.ionos.de:465` (alternativ `587`) müssen
+möglich sein. Nach Einrichtung eine einzelne Testnachricht über das Formular
+senden und die Zustellung sowie Antworten über `Reply-To` prüfen. Eine erfolgreiche
+SMTP-Übergabe bestätigt noch nicht die endgültige Zustellung.
 
 ## Stand der Prüfung
 
