@@ -35,7 +35,8 @@ contact_mail_message <- function(subject, email, text, config) {
     gsub("[\r\n]", "", jsonlite::base64_enc(charToRaw(enc2utf8(x))))
   }
   # Short RFC 2047 words preserve Unicode without exceeding header line limits.
-  subject <- paste0("Kontaktformular: ", trimws(subject))
+  contact_subject <- trimws(subject)
+  subject <- paste0("Kontaktformular: ", contact_subject)
   starts <- seq.int(1L, nchar(subject), by = 10L)
   encoded_subject <- vapply(
     starts,
@@ -44,7 +45,14 @@ contact_mail_message <- function(subject, email, text, config) {
     },
     character(1)
   )
-  body <- encode(trimws(text))
+  body <- encode(paste0(
+    "Betreff: ",
+    contact_subject,
+    "\nE-Mail-Adresse: ",
+    trimws(email),
+    "\n\nNachricht:\n",
+    trimws(text)
+  ))
   starts <- seq.int(1L, nchar(body), by = 76L)
   body <- vapply(
     starts,

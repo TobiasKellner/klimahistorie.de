@@ -70,7 +70,31 @@ testthat::test_that("SMTP uses fixed envelope addresses, UTF-8 and enforced TLS"
   parts <- strsplit(captured$message, "\r\n\r\n", fixed = TRUE)[[1]]
   testthat::expect_identical(
     rawToChar(jsonlite::base64_dec(gsub("\r\n", "", parts[[2]], fixed = TRUE))),
-    enc2utf8("Grüße\nZweite Zeile")
+    enc2utf8(paste0(
+      "Betreff: Frage zu Thüringen\n",
+      "E-Mail-Adresse: person@example.net\n\n",
+      "Nachricht:\nGrüße\nZweite Zeile"
+    ))
+  )
+  subject_words <- regmatches(
+    parts[[1]],
+    gregexpr("=\\?UTF-8\\?B\\?[^?]+\\?=", parts[[1]])
+  )[[1]]
+  decoded_subject <- paste0(
+    vapply(
+      subject_words,
+      function(word) {
+        encoded <- sub("^=\\?UTF-8\\?B\\?", "", word)
+        encoded <- sub("\\?=$", "", encoded)
+        rawToChar(jsonlite::base64_dec(encoded))
+      },
+      character(1)
+    ),
+    collapse = ""
+  )
+  testthat::expect_identical(
+    enc2utf8(decoded_subject),
+    enc2utf8("Kontaktformular: Frage zu Thüringen")
   )
   testthat::expect_lte(
     max(nchar(
