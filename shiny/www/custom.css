@@ -90,7 +90,7 @@
   position: relative;
   overflow: hidden;
   isolation: isolate;
-  aspect-ratio: var(--contact-image-ratio, 3 / 2);
+  aspect-ratio: var(--contact-image-ratio, 1672 / 941);
 }
 
 .contact-advertising .contact-card-overlay .contact-card-image-layer {
@@ -123,7 +123,7 @@
   background: linear-gradient(to bottom, rgb(0 0 0 / 0%), rgb(0 0 0 / 30%));
 }
 
-.contact-advertising h3 { font-size: 0.95rem; }
+.contact-advertising h3 { font-size: 1.1rem; }
 
 .contact-advertising details p { margin: 0.35rem 0 0; }
 

@@ -28,19 +28,18 @@ testthat::test_that("the contact modal includes advertising images without a mai
   )
   testthat::expect_match(html, "Abbrechen", fixed = TRUE)
   testthat::expect_match(html, "contact-card-image-layer", fixed = TRUE)
-  for (ratio in c("1672 / 941", "3 / 2")) {
-    testthat::expect_length(
-      regmatches(
-        html,
-        gregexpr(
-          paste0("--contact-image-ratio: ", ratio, ";"),
-          html,
-          fixed = TRUE
-        )
-      )[[1]],
-      2L
-    )
-  }
+  testthat::expect_length(
+    regmatches(
+      html,
+      gregexpr("--contact-image-ratio: 1672 / 941;", html, fixed = TRUE)
+    )[[1]],
+    4L
+  )
+  testthat::expect_false(grepl(
+    "--contact-image-ratio: 3 / 2;",
+    html,
+    fixed = TRUE
+  ))
   testthat::expect_length(
     regmatches(html, gregexpr("contact-card-overlay", html, fixed = TRUE))[[1]],
     4L
