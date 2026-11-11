@@ -49,3 +49,12 @@ po/*~
 rsconnect/
 
 shiny/authentication/config.yml
+shiny_old/authentication/config.yml
+.env
+.env.*
+!.env.example
+/secrets/
+/DWDdata/
+
+# Local Posit Assistant settings
+/.posit/assistant/settings.json

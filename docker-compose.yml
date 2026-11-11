@@ -1,18 +1,69 @@
-version: "3.9"
-
 services:
 
   shiny-app:
     image: klimahistorie
     container_name: klimahistorie
-    build: .
+    build:
+      context: .
+      args:
+        - http_proxy
+        - https_proxy
+        - no_proxy
+        - HTTP_PROXY
+        - HTTPS_PROXY
+        - NO_PROXY
     ports:
-      - "3838:3838"  # Shiny-App auf Port 3838 verfügbar
+      - "127.0.0.1:3838:3838"
     restart: unless-stopped
     environment:
-      - SHINY_PORT=3838
+      SHINY_PORT: "3838"
+      PGHOST: postgres
+      PGPORT: "5432"
+      PGDATABASE: klimahistorie
+      PGUSER: climate_reader
+      DB_PASSWORD_FILE: /run/secrets/postgres_app_password
+      CONTACT_SMTP_ENABLED: ${CONTACT_SMTP_ENABLED:-true}
+      CONTACT_SMTP_USERNAME: ${CONTACT_SMTP_USERNAME:-info@klimahistorie.de}
+      CONTACT_MAIL_TO: ${CONTACT_MAIL_TO:-${CONTACT_SMTP_USERNAME:-info@klimahistorie.de}}
+      CONTACT_SMTP_PORT: ${CONTACT_SMTP_PORT:-465}
+      CONTACT_SMTP_PASSWORD_FILE: /run/secrets/contact_smtp_password
+    secrets:
+      - postgres_app_password
+      - contact_smtp_password
+    depends_on:
+      postgres:
+        condition: service_healthy
     networks:
       - sp_network
+      - database_network
+
+  postgres:
+    image: postgres:17-bookworm@sha256:665dc7b37ac52a17e298511414c21d23ffa4e6a6ef6225b3e5d59c7afb35e994
+    ports:
+      - "127.0.0.1:5433:5432"
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: klimahistorie
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_admin_password
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+    command: ["postgres", "-c", "password_encryption=scram-sha-256"]
+    secrets:
+      - postgres_admin_password
+      - postgres_app_password
+      - postgres_etl_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/10-app-user.sh:/docker-entrypoint-initdb.d/10-app-user.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - database_network
+      - database_host_access
 
   nginx:
     image: nginx:stable
@@ -33,21 +84,23 @@ services:
 networks:
   sp_network:
     driver: bridge
+  database_network:
+    driver: bridge
+    internal: true
+  database_host_access:
+    driver: bridge
 
+volumes:
+  postgres_data:
 
-    #networks:
-    #  - shiny-net
-
-  # proxy:
-  #   image: traefik:v2.9
-  #   command:
-  #     - "--api.insecure=true"
-  #     - "--providers.docker=true"
-  #     - "--entrypoints.web.address=:80"
-  #   ports:
-  #     - "3850:3838"  # Traefik als Reverse Proxy für Port 80
-  #     - "8080:8080"  # Traefik Dashboard
-  #   volumes:
-  #     - "/var/run/docker.sock:/var/run/docker.sock:ro"
+secrets:
+  postgres_admin_password:
+    file: ${POSTGRES_ADMIN_PASSWORD_FILE:-./secrets/postgres_admin_password}
+  postgres_app_password:
+    file: ${POSTGRES_APP_PASSWORD_FILE:-./secrets/postgres_app_password}
+  postgres_etl_password:
+    file: ./secrets/postgres_etl_password
+  contact_smtp_password:
+    file: ${CONTACT_SMTP_PASSWORD_FILE:-./secrets/contact_smtp_password}
 
 

@@ -1,0 +1,17 @@
+**
+!Dockerfile
+!.dockerignore
+!docker/
+!docker/renv.lock
+!docker/restore.R
+!docker/start.R
+!docker/healthcheck.R
+!shiny/
+!shiny/app.R
+!shiny/R/
+!shiny/R/*.R
+!shiny/www/
+!shiny/www/*.css
+!shiny/www/*.js
+!shiny/www/*.png
+!shiny/www/*.jpg
