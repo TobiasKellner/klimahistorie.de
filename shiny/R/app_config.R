@@ -18,7 +18,7 @@ app_navigation <- function() {
       "Tageshistorie",
       "Klimarekorde",
       "Tage über & unter",
-      "Klima auf einen Blick",
+      "Jahr auf einen Blick",
       "Stationsübersicht",
       "Über Klimashistorie.de"
     ),

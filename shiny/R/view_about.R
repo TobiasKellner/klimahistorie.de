@@ -28,7 +28,7 @@ view_about_ui <- function() {
       ),
       shiny::p(
         "Heute bieten Stationskarten, Jahresvergleiche, Klimarekorde und ",
-        "der Tab „Klima auf einen Blick“ verschiedene Zugänge zur lokalen Klimageschichte."
+        "der Tab „Jahr auf einen Blick“ verschiedene Zugänge zur lokalen Klimageschichte."
       )
     ),
     bslib::card(

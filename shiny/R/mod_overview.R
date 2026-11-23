@@ -1,7 +1,7 @@
 mod_overview_ui <- function(id) {
   ns <- shiny::NS(id)
   filter_card_ui(
-    station_map_header("Klima auf einen Blick", ns),
+    station_map_header("Jahr auf einen Blick", ns),
     ns("filters"),
     controls = shiny::tagList(
       shiny::selectInput(ns("station"), "Station", app_station_choices()),
