@@ -4,7 +4,7 @@ contact_card_ui <- function(
   example,
   image_class = "contact-image",
   overlay = FALSE,
-  image_ratio = "3 / 2"
+  image_ratio = "1672 / 941"
 ) {
   image_tag <- shiny::tags$img(src = image, alt = title, class = image_class)
   htmltools::tagAppendAttributes(
@@ -52,8 +52,7 @@ contact_modal_ui <- function() {
               "visualisieren, um Wachstumsraten und saisonale Schwankungen darzustellen."
             ),
             image_class = "contact-image contact-image-cover",
-            overlay = TRUE,
-            image_ratio = "1672 / 941"
+            overlay = TRUE
           ),
           contact_card_ui(
             "Berichte & Reportings (Web-Anwendungen, Dashboards, PDF, Word, HTML)",
@@ -75,8 +74,7 @@ contact_modal_ui <- function() {
               "jeden Monat automatisiert erstellen und an Kunden per E-Mail schicken."
             ),
             image_class = "contact-image contact-image-cover",
-            overlay = TRUE,
-            image_ratio = "1672 / 941"
+            overlay = TRUE
           ),
           contact_card_ui(
             "Beratung bei komplexen Datenprojekten & Unterstützung bei datenbasierten Entscheidungsprozessen",
