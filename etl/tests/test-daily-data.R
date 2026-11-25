@@ -68,7 +68,7 @@ local({
   merged <- merge_daily_data(historical, recent)
   stopifnot(nrow(merged) == 1L, merged$TMK == 7.5)
   calls <- character()
-  download <- function(station_id, period, cache_dir) {
+  download <- function(station_id, period, cache_dir, keep_archives = FALSE) {
     stopifnot(station_id == 1L, identical(cache_dir, "unused-cache"))
     calls <<- c(calls, period)
     switch(period, historical = historical, recent = recent)

@@ -106,7 +106,12 @@ daily_archive_urls <- function(urls) {
   urls
 }
 
-download_daily_period <- function(station_id, period, cache_dir) {
+download_daily_period <- function(
+  station_id,
+  period,
+  cache_dir,
+  keep_archives = FALSE
+) {
   urls <- rdwd::selectDWD(
     id = station_id,
     res = "daily",
@@ -129,10 +134,18 @@ download_daily_period <- function(station_id, period, cache_dir) {
   datasets <- lapply(urls, function(url) {
     url <- sub("^ftp://", "https://", url)
     path <- file.path(cache_dir, basename(url))
-    if (period == "recent" || !file.exists(path)) {
-      utils::download.file(url, path, mode = "wb", quiet = TRUE)
+    if (isTRUE(keep_archives)) {
+      if (period == "recent" || !file.exists(path)) {
+        utils::download.file(url, path, mode = "wb", quiet = TRUE)
+      }
+      data <- read_daily_archive(path)
+    } else {
+      tmp <- tempfile(pattern = "dwd_", tmpdir = cache_dir, fileext = ".zip")
+      on.exit(unlink(tmp, force = TRUE), add = TRUE)
+      utils::download.file(url, tmp, mode = "wb", quiet = TRUE)
+      data <- read_daily_archive(tmp)
+      unlink(tmp, force = TRUE)
     }
-    data <- read_daily_archive(path)
     if (any(data$STATIONS_ID != station_id)) {
       stop(
         "Die Produktdatei enthält eine unerwartete Stations-ID.",
@@ -151,16 +164,17 @@ load_daily_station_data <- function(
   cache_dir,
   period = c("both", "recent", "historical"),
   report = function(phase) invisible(NULL),
-  download = download_daily_period
+  download = download_daily_period,
+  keep_archives = FALSE
 ) {
   period <- match.arg(period)
   if (period %in% c("both", "historical")) {
     report("historische Daten laden")
-    historical <- download(station_id, "historical", cache_dir)
+    historical <- download(station_id, "historical", cache_dir, keep_archives)
   }
   if (period %in% c("both", "recent")) {
     report("aktuelle Daten laden")
-    recent <- download(station_id, "recent", cache_dir)
+    recent <- download(station_id, "recent", cache_dir, keep_archives)
   }
   data <- switch(
     period,
@@ -195,11 +209,19 @@ import_daily_data <- function(
   station_ids = NULL,
   progress = TRUE,
   n_stations = NULL,
-  period = c("both", "recent", "historical")
+  period = c("both", "recent", "historical"),
+  keep_archives = FALSE
 ) {
   period <- match.arg(period)
   if (!is.logical(progress) || length(progress) != 1L || is.na(progress)) {
     stop("progress muss TRUE oder FALSE sein.", call. = FALSE)
+  }
+  if (
+    !is.logical(keep_archives) ||
+      length(keep_archives) != 1L ||
+      is.na(keep_archives)
+  ) {
+    stop("keep_archives muss TRUE oder FALSE sein.", call. = FALSE)
   }
   # Validate the limit before connecting; explicit IDs retain their supplied order.
   station_ids <- limit_daily_station_ids(station_ids, n_stations)
@@ -255,7 +277,13 @@ import_daily_data <- function(
         ))
       }
     }
-    data <- load_daily_station_data(station_id, cache_dir, period, report)
+    data <- load_daily_station_data(
+      station_id,
+      cache_dir,
+      period,
+      report,
+      keep_archives = keep_archives
+    )
     if (!nrow(data)) {
       stop("Keine Tagesdaten für die ausgewählte Station.", call. = FALSE)
     }

@@ -121,10 +121,10 @@ Der Upsert verwendet `STATIONS_ID, MESS_DATUM`. Bei Überlappungen haben aktuell
 Duplikate innerhalb derselben Herkunft und abweichende Produktspalten führen zum
 Abbruch statt stillschweigendem Datenverlust. Jede Station wird in einer Transaktion
 importiert; bereits abgeschlossene Stationen bleiben bei späteren Fehlern gespeichert.
-Ein erneuter Lauf ist möglich. Archive bleiben im von Git ausgeschlossenen `DWDdata/`;
-aktuelle Archive werden neu geladen, historische zwischengespeichert. Für einen
-erneuten Abruf möglicherweise korrigierter historischer Daten ein neues `cache_dir`
-verwenden. Es werden keine Cache-Dateien automatisch gelöscht.
+Ein erneuter Lauf ist möglich. Standardmäßig lädt der Import Archive in eine
+temporäre Datei unterhalb von `cache_dir` und löscht sie unmittelbar nach dem
+Einlesen wieder. Damit bleiben nach einem Lauf keine ZIP-Dateien in `DWDdata/`.
+Nur mit `keep_archives = TRUE` werden Archive im Cache behalten.
 
 Die Rohstruktur ist nicht kompatibel mit den früheren Spaltennamen der Legacy-App.
 Abfragen mit alten Feldnamen benötigen eine angepasste Sicht oder neue Abfragen,
