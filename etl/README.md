@@ -131,3 +131,45 @@ Abfragen mit alten Feldnamen benötigen eine angepasste Sicht oder neue Abfragen
 insbesondere für Datumswerte und Fehlwertcodes.
 
 Tests ohne Datenbankzugriff: `source("etl/tests/test-daily-data.R")`.
+
+## Airflow: dediziertes ETL-Image (Option A)
+
+Für einen externen Airflow-Betrieb empfiehlt sich ein eigenes ETL-Image, das
+pro DAG-Lauf als kurzlebiger Container gestartet wird.
+
+Image bauen (aus der Projektwurzel):
+
+```bash
+docker build -f etl/Dockerfile -t klimahistorie-etl:latest .
+```
+
+Der Container startet standardmäßig `etl/run_etl.R` und steuert den Ablauf über
+Umgebungsvariablen:
+
+| Variable | Standard | Bedeutung |
+|---|---|---|
+| `ETL_RUN_STATION` | `true` | Stationsindex importieren |
+| `ETL_RUN_DAILY` | `true` | Tagesdaten importieren |
+| `ETL_DAILY_PERIOD` | `both` | `both`, `recent` oder `historical` |
+| `ETL_N_STATIONS` | leer | optionales Limit für Testläufe |
+| `ETL_KEEP_ARCHIVES` | `false` | ZIP-Archive behalten statt sofort löschen |
+
+Zusätzlich benötigt der Container wie bisher:
+`PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER`, `DB_PASSWORD_FILE` und optional
+`PGSSLMODE`.
+
+Beispielaufruf lokal:
+
+```bash
+docker run --rm \
+  -e PGHOST=127.0.0.1 \
+  -e PGPORT=5433 \
+  -e PGDATABASE=klimahistorie \
+  -e PGUSER=climate_etl \
+  -e DB_PASSWORD_FILE=/run/secrets/postgres_etl_password \
+  -v "$(pwd)/secrets/postgres_etl_password:/run/secrets/postgres_etl_password:ro" \
+  klimahistorie-etl:latest
+```
+
+Für tägliche Updates kann Airflow z. B. `ETL_DAILY_PERIOD=recent` setzen und den
+Stationsindex weiterhin regelmäßig (etwa täglich oder wöchentlich) mitlaufen lassen.
