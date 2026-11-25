@@ -46,7 +46,6 @@ po/*~
 rsconnect/
 
 shiny/authentication/config.yml
-shiny_old/authentication/config.yml
 .env
 .env.*
 !.env.example

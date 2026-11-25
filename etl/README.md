@@ -1,7 +1,7 @@
 # ETL-Datenbankverbindung
 
 Imports vom Projektverzeichnis aus starten. Alle Imports verwenden
-`etl/db_connection.R` statt der alten Verbindung unter `shiny_old`.
+`etl/db_connection.R`.
 Benötigt werden die R-Pakete `DBI` und `RPostgres`.
 
 Die Verbindung benötigt `PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER` und
@@ -126,8 +126,8 @@ aktuelle Archive werden neu geladen, historische zwischengespeichert. Für einen
 erneuten Abruf möglicherweise korrigierter historischer Daten ein neues `cache_dir`
 verwenden. Es werden keine Cache-Dateien automatisch gelöscht.
 
-Die Rohstruktur ist nicht kompatibel mit den alten Spaltennamen der Legacy-App
-unter `shiny_old`. Dortige Abfragen benötigen später eine angepasste Sicht oder neue
-Abfragen, insbesondere für Datumswerte und Fehlwertcodes.
+Die Rohstruktur ist nicht kompatibel mit den früheren Spaltennamen der Legacy-App.
+Abfragen mit alten Feldnamen benötigen eine angepasste Sicht oder neue Abfragen,
+insbesondere für Datumswerte und Fehlwertcodes.
 
 Tests ohne Datenbankzugriff: `source("etl/tests/test-daily-data.R")`.

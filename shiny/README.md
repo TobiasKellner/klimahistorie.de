@@ -194,8 +194,6 @@ oder Datenbankverbindungen vorauszusetzen. Module verarbeiten dann ihre
 Filterzustände und geben die benötigten Ergebnisse zurück. Neue fachliche
 Regeln einschließlich fehlender Werte zuerst definieren, dann implementieren.
 
-Die bisherige App liegt als Orientierungshilfe unter `shiny_old/`.
-
 ## Kontaktformular: IONOS SMTP
 
 Der Versand nutzt `curl::send_mail()` mit festem Absender und Empfänger.

@@ -88,7 +88,6 @@ Den vorhandenen Host-Nginx nicht stoppen; andere Dienste könnten ihn benötigen
 | `.dockerignore` | Allowlist für R-Code und aktive CSS/JS/PNG/JPG-Assets |
 | `docker-compose.yml` | Dienste, Netze, Portbindungen und Secrets |
 | `shiny/` | Aktuelle App, die ins Image kopiert wird |
-| `shiny_old/` | Referenz, nicht die produktive App |
 | `db/migrations/` | Versioniertes Datenbankschema |
 | `etl/` | Importiert Stationsmetadaten und Tagesmessungen |
 | `secrets/` | Lokale Passwortdateien, nicht in Git |
