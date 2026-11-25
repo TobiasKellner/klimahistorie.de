@@ -189,6 +189,11 @@ make status
 make logs
 ```
 
+#### Tests vor dem Deployment ausführen
+
+Die Testbefehle und Voraussetzungen sind zentral in
+[docs/README.md](../docs/README.md#tests) beschrieben.
+
 `git pull --ff-only` bricht bei auseinanderlaufender Branch-Historie ab,
 statt automatisch einen Merge zu erzeugen. Das Makefile holt keinen Git-Code selbst.
 

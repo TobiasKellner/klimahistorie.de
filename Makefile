@@ -10,7 +10,7 @@ SHELL := /bin/bash
 export CONFIRM
 
 # Ziele sind Aktionen; gleichnamige Dateien dürfen ihre Ausführung nicht verhindern.
-.PHONY: help secrets db-up migrate etl-password install build deploy status logs db-reset
+.PHONY: help secrets db-up migrate etl-password test test-unit test-browser install build deploy status logs db-reset
 
 help:
 	@printf '%s\n' \
@@ -21,6 +21,9 @@ help:
 	  'make migrate       Ausstehende Migrationen anwenden' \
 	  'make etl-password  ETL-Rollenpasswort aus dem gemounteten Secret setzen' \
 	  'make build         Nur das App-Image bauen' \
+	  'make test          Unit- und Browser-Tests ausführen' \
+	  'make test-unit     Nur testthat-Unit-Tests ausführen' \
+	  'make test-browser  Nur Browser-Tests ausführen' \
 	  'make status        Containerstatus anzeigen' \
 	  'make logs          Letzte App- und DB-Logs anzeigen' \
 	  'make db-reset CONFIRM=DELETE_KLIMAHISTORIE_DB' \
@@ -61,6 +64,16 @@ install:
 # Docker nutzt den Build-Cache. Neue R-Pakete müssen im Runtime-Lockfile stehen.
 build:
 	docker compose build shiny-app
+
+# Führen die im Repository vorhandenen Teststarter aus und brechen bei Fehlern ab.
+# testthat muss in der aktiven R-Umgebung verfügbar sein (z. B. via renv::restore()).
+test: test-unit test-browser
+
+test-unit:
+	Rscript shiny/tests/testthat.R
+
+test-browser:
+	Rscript shiny/tests/browser.R
 
 # build ist Voraussetzung; ein bloßer Container-Neustart übernimmt keinen neuen Code.
 # --no-deps: PostgreSQL nicht neu erstellen; die DB muss bereits laufen.

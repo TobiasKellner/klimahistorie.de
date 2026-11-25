@@ -5,6 +5,9 @@ Die aktuelle, modulare App liegt unter [`shiny/`](shiny/README.md).
 Start aus der Projektwurzel: `shiny::runApp("shiny")`.
 Architektur und Testbefehle sind in der [App-Dokumentation](shiny/README.md) beschrieben.
 
+Ein zentraler Einstieg in die Projektdokumentation liegt unter
+[docs/README.md](docs/README.md).
+
 Die bisherige App bleibt unter `shiny_old/` als Orientierungshilfe erhalten.
 Docker bindet die aktuelle App aus `shiny/` ein; die Importskripte verwenden
 `etl/db_connection.R`. Siehe [ETL-Dokumentation](etl/README.md).
